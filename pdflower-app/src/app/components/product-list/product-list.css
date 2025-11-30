@@ -1,0 +1,17 @@
+.card-img-top {
+    object-fit: cover; 
+    height: 250px; 
+}
+
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.add-to-cart-btn mat-icon {
+    color: #AA9860;
+    transition: color 0.3s ease;
+}
+
+.add-to-cart-btn:hover mat-icon {
+    color: #C6B06A;
+}

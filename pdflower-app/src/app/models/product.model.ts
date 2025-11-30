@@ -1,9 +1,12 @@
 export interface Product {
+    id: number;
     name: string;
     description: string;
-    imageURL: string;
+    imageUrl: string;
     price: number;
     quantity: number;
+    isActive: boolean;
+    category: string;
     insertDate: Date;
     updateDate: Date;
 }
