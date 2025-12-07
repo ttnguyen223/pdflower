@@ -1,6 +1,29 @@
 <div class="banner">
-  <img src="assets/wide-banner.png" alt="PDFlower" class="banner-image">
+  <a routerLink="/">
+    <img src="assets/logo.png" alt="PDFlower" class="banner-image">
+  </a>
 </div>
+<mat-toolbar color="primary" class="main-navbar">
+  <button mat-icon-button (click)="openMenu()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  
+  <span class="navbar-spacer"></span>
+  <span class="navbar-spacer"></span>
+  
+  @if (showCart) {
+    <a [matBadge]="cartService.cartItemCount()" 
+       matBadgeColor="warn" 
+       [matBadgeHidden]="cartService.cartItemCount() === 0"
+       class="cart-link-wrapper"
+       (click)="goToCart()">
+      <button mat-icon-button>
+        <mat-icon>shopping_cart</mat-icon>
+      </button>
+    </a>
+  }
+
+</mat-toolbar>
 <main>
   <router-outlet></router-outlet>
 </main>

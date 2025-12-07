@@ -1,8 +1,10 @@
-import { Component, signal, input, computed } from '@angular/core';
-import { Product } from '../../models/product.model';
+import { Component, signal, input, computed, inject } from '@angular/core';
+import { Product } from '../../../models/product.model';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { CartService } from '../../../services/cart.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-product-list',
@@ -12,17 +14,22 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './product-list.css',
 })
 export class ProductList {
-  category = input<string>('all');
+  private cartService = inject(CartService);
+  private route = inject(ActivatedRoute);
+
+  category = input<string>();
+
   productList = signal<Product[]>([
     {
       id: 1,
       name: 'Bó hoa đặc biệt',
       description: 'Bó hoa đặc biệt.',
-      imageUrl: 'assets/flowers/colorful_flowers.jpg',
+      mainImageUrl: 'assets/flowers/colorful_flowers.jpg',
+      imageUrls: [],
       price: 150000,
       quantity: 1,
       isActive: true,
-      category: 'Indoor Plants',
+      categories: ['Indoor Plants'],
       insertDate: new Date('2025-01-15T10:00:00Z'),
       updateDate: new Date('2025-10-20T14:30:00Z'),
     },
@@ -30,11 +37,12 @@ export class ProductList {
       id: 2,
       name: 'Bó hoa hồng đỏ',
       description: 'Bó hoa hồng đỏ.',
-      imageUrl: 'assets/flowers/red_flowers.jpg',
+      mainImageUrl: 'assets/flowers/red_flowers.jpg',
+      imageUrls: [],
       price: 120000,
       quantity: 1,
       isActive: true,
-      category: 'Pots & Accessories',
+      categories: ['Pots & Accessories'],
       insertDate: new Date('2025-02-01T11:45:00Z'),
       updateDate: new Date('2025-11-25T09:15:00Z'),
     },
@@ -42,11 +50,12 @@ export class ProductList {
       id: 3,
       name: 'Bó hoa trắng',
       description: 'Bó hoa trắng.',
-      imageUrl: 'assets/flowers/white_flowers.jpg',
+      mainImageUrl: 'assets/flowers/white_flowers.jpg',
+      imageUrls: [],
       price: 200000,
       quantity: 1,
       isActive: true,
-      category: 'Gardening Kits',
+      categories: ['Gardening Kits'],
       insertDate: new Date('2025-03-10T09:00:00Z'),
       updateDate: new Date('2025-03-10T09:00:00Z'),
     },
@@ -54,24 +63,39 @@ export class ProductList {
       id: 4,
       name: 'Bó hoa màu tím',
       description: 'Bó hoa màu tím.',
-      imageUrl: 'assets/flowers/purple_flowers.jpg',
+      mainImageUrl: 'assets/flowers/purple_flowers.jpg',
+      imageUrls: [],
       price: 200000,
       quantity: 30,
       isActive: true,
-      category: 'Home Decor',
+      categories: ['Home Decor'],
       insertDate: new Date('2025-04-05T16:20:00Z'),
       updateDate: new Date('2025-04-05T16:20:00Z'),
     },
   ]);
 
-  filteredProducts = computed(() => {
-    if (!this.category() || this.category().toLowerCase() === 'all') {
-        return this.productList().filter(p => p.isActive == true);
+  currentCategory = computed(() => {
+    if (this.category()) {
+      return this.category()!;
     }
-    return this.productList().filter(p => p.category.toLowerCase() === this.category().toLowerCase() && p.isActive == true);
+    return this.route.snapshot.data['defaultCategory'] || 'all';
   });
 
-  addToCart(item: any) {
-    alert(item.name + ' added to cart!');
+
+  filteredProducts = computed(() => {
+    const category = this.currentCategory().toLowerCase();
+
+    if (!category || category === 'all') {
+        return this.productList().filter(p => p.isActive == true);
+    }
+    return this.productList().filter(p =>
+      p.categories.some(productCategory =>
+          productCategory.toLowerCase() === category.toLowerCase()
+      ) && p.isActive === true
+    );
+  });
+
+  addToCart(item: Product) {
+    this.cartService.addToCart(item);
   }
 }

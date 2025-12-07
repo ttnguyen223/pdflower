@@ -2,11 +2,12 @@ export interface Product {
     id: number;
     name: string;
     description: string;
-    imageUrl: string;
+    mainImageUrl: string;
+    imageUrls: string[];
     price: number;
     quantity: number;
     isActive: boolean;
-    category: string;
+    categories: string[];
     insertDate: Date;
     updateDate: Date;
 }

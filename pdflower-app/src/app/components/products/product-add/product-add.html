@@ -1,0 +1,67 @@
+<div class="container mt-4">
+  <h2>Create New Product</h2>
+  
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+    
+    <mat-form-field appearance="fill" class="w-100">
+      <mat-label>Product Name</mat-label>
+      <input matInput formControlName="name" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="w-100">
+      <mat-label>Description (Optional)</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+    
+    <div class="row">
+      <div class="col-md-6">
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>Price (VND)</mat-label>
+          <input matInput formControlName="price" type="number" required min="0">
+        </mat-form-field>
+      </div>
+      <div class="col-md-6">
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>Quantity</mat-label>
+          <input matInput formControlName="quantity" type="number" required min="0">
+        </mat-form-field>
+      </div>
+    </div>
+    
+    <mat-form-field appearance="fill" class="w-100">
+      <mat-label>Select Categories</mat-label>
+      <mat-select formControlName="categories" multiple required>
+        @for (category of availableCategories; track category) {
+          <mat-option [value]="category">{{ category }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-slide-toggle formControlName="isActive" class="mb-3">
+      Product Active (Live for sale)
+    </mat-slide-toggle>
+
+    <div class="mb-3 mt-3">
+      <label class="form-label">Upload Images</label>
+      <input type="file" multiple (change)="onFileSelected($event)" class="form-control" accept="image/*">
+    </div>
+
+    @if(files.length > 0) {
+      <div class="d-flex flex-wrap gap-3 mb-3">
+        @for (file of files; track $index) {
+          <div class="image-preview-card" [class.is-main]="mainImageUrl === file.name || (mainImageUrl === '' && $index === 0)">
+            <img [src]="file | fileUrl" alt="Preview" class="img-thumbnail">
+            <button type="button" class="btn btn-sm btn-danger remove-btn" (click)="removeFile($index)">Remove</button>
+            <button type="button" class="btn btn-sm btn-primary main-btn" (click)="setMainImage(file.name)">
+              {{ (mainImageUrl === file.name || (mainImageUrl === '' && $index === 0)) ? 'Main Image' : 'Set as Main' }}
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <button mat-raised-button color="success" type="submit" [disabled]="isUploading || productForm.invalid">
+      {{ isUploading ? 'Uploading...' : 'Save Product' }}
+    </button>
+  </form>
+</div>

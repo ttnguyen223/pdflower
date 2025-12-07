@@ -7,18 +7,60 @@ body, .page-wrapper {
 .banner {
   display: flex;
   justify-content: center;
-  padding: 20px 0;
+  align-items: center;
+  width: 100%;
 }
 
 .banner-image {
-  max-width: 100%;
+  max-width: 80%;
+  max-height: 200px;
   height: auto;
   display: block;
+  margin: 0 auto; 
 }
 
 main {
-  max-width: 900px;
+  min-height: calc(100vh - 40px); 
+  max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
   padding: 0 20px;
+}
+
+.main-navbar.mat-toolbar {
+    min-height: 40px !important; 
+    height: 40px !important;
+    background-color: palegoldenrod;
+    color: black; 
+    padding: 0 8px;
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-spacer {
+  flex: 1 1 auto;
+}
+
+.navbar-logo-image {
+  max-height: 30px; 
+  height: auto;
+}
+
+.main-navbar button.mat-icon-button {
+    height: 40px; 
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.main-navbar mat-icon {
+    color: black;
+    height: 20px;
+    width: 20px;
+    font-size: 20px;
+    margin: 0; 
+    display: block;
 }

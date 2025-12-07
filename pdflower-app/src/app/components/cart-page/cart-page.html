@@ -1,0 +1,51 @@
+<div class="container mt-5">
+  <button mat-button (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+    Continue Shopping
+  </button>
+  <h1 class="mb-4">Your Shopping Cart</h1>
+
+  @if (totalCount() === 0) {
+  <div class="alert alert-info">Your cart is empty.</div>
+  } @else {
+  <div class="row">
+    <div class="col-md-8">
+      @for (item of cartItems(); track item.id) {
+      <mat-card class="mb-3 shadow-sm">
+        <mat-card-content class="d-flex align-items-center">
+          <img [src]="item.mainImageUrl" alt="{{ item.name }}" class="cart-item-img me-4" />
+
+          <div class="flex-grow-1">
+            <h5 class="card-title">{{ item.name }}</h5>
+            <p>Quantity: {{ item.quantity }}</p>
+          </div>
+
+          <div class="text-end">
+            <p class="fw-bold">{{ item.price * item.quantity | number : '1.0-0' }}₫</p>
+            <button mat-icon-button color="warn" (click)="removeItem(item.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      }
+    </div>
+
+    <div class="col-md-4">
+      <mat-card class="shadow-sm">
+        <mat-card-header>
+          <mat-card-title>Order Summary</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="pt-3">
+          <p>Total Items: {{ totalCount() }}</p>
+          <p class="fs-4 fw-bold">Total Price: {{ totalPrice() | number : '1.0-0' }}₫</p>
+          <button mat-raised-button color="primary" class="w-100 mb-2">Checkout</button>
+          <button mat-stroked-button color="warn" class="w-100" (click)="clearCart()">
+            Clear Cart
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+  }
+</div>

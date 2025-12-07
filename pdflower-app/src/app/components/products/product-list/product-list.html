@@ -8,7 +8,7 @@
                 
                 <div class="card h-100 shadow-sm border-0">
                     
-                    <img [src]="item.imageUrl" 
+                    <img [src]="item.mainImageUrl" 
                          class="card-img-top object-fit-cover" 
                          alt="{{ item.name }}"
                          title="{{ item.description }}">
@@ -20,9 +20,13 @@
                         <p class="card-text fw-bold text-success mb-0">
                             {{ item.price | number: '1.0-0' }}₫
                         </p>
-                        <button mat-icon-button class="add-to-cart-btn" color="primary" 
-                                (click)="addToCart(item)">
-                            <mat-icon>add_shopping_cart</mat-icon>
+                        <button mat-icon-button 
+                                class="add-to-cart-btn" 
+                                color="primary" 
+                                (click)="addToCart(item)"
+                                matTooltip="Add item to cart"
+                                matTooltipPosition="above">
+                            <mat-icon>add</mat-icon>
                         </button>
                     </div>
                 </div>
