@@ -31,7 +31,7 @@ export class CartService {
     this._cartItems.set([]); 
   }
 
-  removeItem(productId: number) {
+  removeItem(productId: string) {
     this._cartItems.update(items => items.filter(item => item.id !== productId));
   }
 }

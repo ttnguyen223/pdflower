@@ -19,6 +19,10 @@ body, .page-wrapper {
   margin: 0 auto; 
 }
 
+.account-icon-wrapper {
+  margin-right: 8px;
+}
+
 main {
   min-height: calc(100vh - 40px); 
   max-width: 1000px;
@@ -63,4 +67,29 @@ main {
     font-size: 20px;
     margin: 0; 
     display: block;
+}
+
+.loading-overlay {
+  position: fixed; /* Fixes it in the viewport */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+.user-email-display {
+  font-size: 14px;
+  margin-right: 15px; /* Add some space between the email and the account icon */
+  color: #333; /* A readable color against palegoldenrod */
+  /* Ensure it doesn't get squished by flexbox properties */
+  white-space: nowrap; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px; /* Prevent extremely long emails from taking too much space */
+  font-weight: bold;
 }

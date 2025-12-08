@@ -1,0 +1,56 @@
+<div class="register-container">
+  <div class="register-card">
+    <h2>Create Your Account</h2>
+    
+    <!-- Success Message Display -->
+    @if (successMessage) {
+      <div class="success-message">
+        {{ successMessage }}
+        <!-- Link to login page -->
+        <a routerLink="/login">Log in now</a>
+      </div>
+    }
+
+    <!-- Error Message Display -->
+    @if (errorMessage) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+    }
+    
+    <form (ngSubmit)="onSubmit()" class="register-form">
+      <div class="form-group">
+        <label for="email">Email Address:</label>
+        <!-- Add autocomplete="email" -->
+        <input type="email" id="email" [(ngModel)]="email" name="email" required [disabled]="inputsDisabled" autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <!-- Add autocomplete="new-password" -->
+        <input type="password" id="password" [(ngModel)]="password" name="password" required minlength="6" [disabled]="inputsDisabled"
+               (input)="checkPasswordMatch()" autocomplete="new-password"> 
+      </div>
+
+      <!-- Password Confirmation Input -->
+      <div class="form-group">
+        <label for="passwordConfirm">Confirm Password:</label>
+        <!-- Add autocomplete="new-password" -->
+        <input type="password" id="passwordConfirm" [(ngModel)]="passwordConfirm" name="passwordConfirm" required minlength="6" [disabled]="inputsDisabled"
+               (input)="checkPasswordMatch()" autocomplete="new-password">
+
+        <!-- Display real-time mismatch feedback -->
+        @if (passwordMismatchError) {
+          <p class="validation-feedback error">{{ passwordMismatchError }}</p>
+        }
+      </div>
+
+      <button type="submit" [disabled]="inputsDisabled || passwordMismatchError !== null" class="submit-btn">Register Account</button>
+    </form>
+    
+    <p class="signin-prompt">
+      Already a member? 
+      <a routerLink="/login">Sign In here</a>
+    </p>
+  </div>
+</div>

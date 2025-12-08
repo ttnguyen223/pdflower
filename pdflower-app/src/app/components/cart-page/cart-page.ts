@@ -43,7 +43,7 @@ export class CartPage {
     });
   }
 
-  removeItem(productId: number) {
+  removeItem(productId: string) {
     this.cartService.removeItem(productId);
   }
 }

@@ -1,29 +1,72 @@
 <div class="banner">
   <a routerLink="/">
-    <img src="assets/logo.png" alt="PDFlower" class="banner-image">
+    <img src="assets/logo.png" alt="PDFlower" class="banner-image" />
   </a>
 </div>
 <mat-toolbar color="primary" class="main-navbar">
   <button mat-icon-button (click)="openMenu()">
     <mat-icon>menu</mat-icon>
   </button>
-  
+
   <span class="navbar-spacer"></span>
-  <span class="navbar-spacer"></span>
-  
+
+  @if (user$ | async; as user) {
+    <span class="user-email-display">{{ user.email }}</span>
+  }
+   <button mat-icon-button 
+          [matMenuTriggerFor]="accountMenu" 
+          class="account-icon-wrapper"
+          aria-label="Account menu">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+
   @if (showCart) {
-    <a [matBadge]="cartService.cartItemCount()" 
-       matBadgeColor="warn" 
-       [matBadgeHidden]="cartService.cartItemCount() === 0"
-       class="cart-link-wrapper"
-       (click)="goToCart()">
-      <button mat-icon-button>
-        <mat-icon>shopping_cart</mat-icon>
-      </button>
-    </a>
+  <a
+    [matBadge]="cartService.cartItemCount()"
+    matBadgeColor="warn"
+    [matBadgeHidden]="cartService.cartItemCount() === 0"
+    class="cart-link-wrapper"
+    (click)="goToCart()"
+  >
+    <button mat-icon-button>
+      <mat-icon>shopping_cart</mat-icon>
+    </button>
+  </a>
   }
 
 </mat-toolbar>
+
+<!-- Define the Account Menu Template -->
+<mat-menu #accountMenu="matMenu">
+  <!-- Check user status using async pipe -->
+  @if (user$ | async; as user) {
+    <!-- Option for logged-in users -->
+     @if (isAdmin$ | async) {
+      <!-- This button is only rendered if isAdmin$ emits 'true' -->
+      <button mat-menu-item routerLink="/admin">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </button>
+    }
+    <button mat-menu-item (click)="onLogout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  } @else {
+    <!-- Option for logged-out users -->
+    <button mat-menu-item routerLink="/login">
+      <mat-icon>login</mat-icon>
+      <span>Login</span>
+    </button>
+  }
+</mat-menu>
+
+@if (loading) {
+  <div class="loading-overlay">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+}
+
 <main>
   <router-outlet></router-outlet>
 </main>

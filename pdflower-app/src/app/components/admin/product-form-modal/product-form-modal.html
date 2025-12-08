@@ -1,0 +1,132 @@
+<h2 mat-dialog-title>{{ data ? 'Chỉnh Sửa Sản Phẩm ' : 'Sản Phẩm Mới' }}</h2>
+
+@if (errorMessage) {
+  <div class="error-message-banner">
+    <mat-icon color="warn">error</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+}
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="product-form-modal">
+    
+    <!-- SECTION 1: Images (URL-based Interface with Previews) -->
+    <div class="form-section image-management-section">
+        
+        <!-- Image Previews Rendered On Top -->
+        @if (sortedImagePreviews.length > 0) {
+            <h4>Xem trước hình ảnh:</h4>
+            <div class="image-previews-container">
+                @for (image of sortedImagePreviews; track trackByIndex($index)) {
+                    <mat-card class="preview-thumbnail-card" [class.main-image-border]="image.isMain">
+                        <img [src]="image.url" alt="Product preview" class="preview-thumbnail-img" />
+                        @if (image.isMain) {
+                            <div class="main-image-badge">Chính</div>
+                        }
+                    </mat-card>
+                }
+            </div>
+            <hr>
+        }
+
+        <div class="image-urls-header">
+            <h4>URL Hình ảnh:</h4>
+            <button mat-mini-fab color="primary" type="button" (click)="addImageUrlGroup()" aria-label="Add image URL input">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+
+        <div formArrayName="imageUrls" class="image-url-list">
+            <!-- Loop through the FormArray 'imageUrls' (original order) -->
+            @for (imageUrlGroup of imageUrlsArray.controls; track trackByIndex($index); let i = $index) {
+                <div [formGroupName]="i" class="image-url-item">
+                  <!-- ADDED TOOLTIP HERE -->
+                    <mat-radio-button 
+                        name="main-image-selection" 
+                        [value]="i"
+                        [checked]="imageUrlGroup.get('isMain')?.value"
+                        (change)="setMainImage(i)"
+                        matTooltip="Chọn làm hình ảnh chính"
+                        matTooltipPosition="above">
+                    </mat-radio-button>
+
+                    <mat-form-field appearance="outline" class="url-input-field">
+                        <mat-label>Url #{{ i + 1 }}</mat-label>
+                        <input matInput formControlName="url" required placeholder="https://example.com/image.jpg" />
+                        @if (imageUrlGroup.get('url')?.invalid && imageUrlGroup.get('url')?.touched) {
+                            <mat-error>URL hợp lệ là bắt buộc.</mat-error>
+                        }
+                    </mat-form-field>
+                    
+                    @if (imageUrlsArray.length > 1) {
+                        <button mat-icon-button color="warn" type="button" (click)="removeImageUrlGroup(i)" aria-label="Remove image URL">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+    
+    <!-- SECTION 2: Product Details (Input fields use Vietnamese labels) -->
+    <div class="form-section">        
+        <mat-form-field appearance="outline">
+          <mat-label>Tên sản phẩm</mat-label>
+          <input matInput formControlName="name" required />
+          @if (form.controls['name'].invalid && form.controls['name'].touched) {
+            <mat-error>Vui lòng bao gồm tên sản phẩm</mat-error>
+          }
+        </mat-form-field>
+         <div class="price-quantity-group">
+            <mat-form-field appearance="outline" class="price-input-field">
+              <mat-label>Giá (VND)</mat-label>
+              <input matInput type="text" formControlName="price" required (input)="onPriceInput($event)" />
+              @if (form.controls['price'].invalid && form.controls['price'].touched) {
+                <mat-error>Vui lòng nhập giá sản phẩm.</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Số lượng</mat-label>
+              <input matInput type="number" formControlName="quantity" required min="0" />
+              @if (form.controls['quantity'].invalid && form.controls['quantity'].touched) {
+                <mat-error>Số lượng phải lớn hơn hoặc bằng 0.</mat-error>
+              }
+            </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Mô tả (Tùy chọn)</mat-label>
+          <textarea matInput formControlName="description" rows="4"></textarea>
+        </mat-form-field>
+    </div>
+    <!-- SECTION 3: Categories -->
+    <div class="form-section">
+        <div class="categories-section">
+          <h4>Thể loại:</h4>
+          @for (category of categories$ | async; track category.id) {
+            <div class="category-item-vertical">
+                <mat-checkbox 
+                [value]="category.name" 
+                (change)="onCategoryChange($event)"
+                [checked]="categoriesFormArray.value.includes(category.name)"> 
+                {{ category.name }}
+                </mat-checkbox>
+            </div>
+          }
+          @if (categoriesFormArray.invalid && categoriesFormArray.touched) {
+            <mat-error style="display: block; margin-top: 10px;">Vui lòng chọn ít nhất một loại.</mat-error>
+          }
+        </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Hủy bỏ</button>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    [disabled]="!form.valid" 
+    (click)="onSave()">
+    Lưu sản phẩm
+  </button>
+</mat-dialog-actions>
