@@ -1,5 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
@@ -14,6 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding()), provideFirebaseApp(() => initializeApp({ projectId: "pdflower-e42fd", appId: "1:839079857956:web:a1e6a107635ece5e7cedb1", storageBucket: "pdflower-e42fd.firebasestorage.app", apiKey: "AIzaSyAFvzX9AaGLohf_wcHYRpVD-iPxcuPRcG4", authDomain: "pdflower-e42fd.firebaseapp.com", messagingSenderId: "839079857956", measurementId: "G-W4KDWMEN4B" })), provideFirestore(() => getFirestore()),
     provideAuth(() => getAuth()),
     provideStorage(() => getStorage()),
+    provideHttpClient(),  
     //provideRouter(routes), provideFirebaseApp(() => initializeApp({ projectId: "pdflower-e42fd", appId: "1:839079857956:web:a1e6a107635ece5e7cedb1", storageBucket: "pdflower-e42fd.firebasestorage.app", apiKey: "AIzaSyAFvzX9AaGLohf_wcHYRpVD-iPxcuPRcG4", authDomain: "pdflower-e42fd.firebaseapp.com", messagingSenderId: "839079857956", projectNumber: "839079857956", version: "2" })), provideFirestore(() => getFirestore())
   ]
 };

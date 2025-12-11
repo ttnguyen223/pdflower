@@ -1,0 +1,50 @@
+<!-- src/app/components/products/product-details-page/product-details-page.component.html -->
+
+<!-- Use a container (e.g., div or ng-container) to host the @if block -->
+<div>
+  @if (product(); as p) {
+    <!-- The main container is now safely inside the @if block -->
+    <div class="product-detail-page-container">
+      <div class="image-gallery">
+        <!-- Slideshow Area -->
+        <div class="slideshow-wrapper">
+          <img 
+            [src]="p.imageUrls[currentImageIndex()]" 
+            alt="{{ p.name }}" 
+            class="slideshow-image"
+          />
+          
+          <!-- Navigation Buttons -->
+          @if (p.imageUrls.length > 1) {
+            <button mat-icon-button class="nav-button prev" (click)="prevImage()">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <button mat-icon-button class="nav-button next" (click)="nextImage()">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="product-info-panel">
+        <!-- Go Back to Products Button -->
+        <button mat-flat-button color="primary" (click)="goBackToProducts()" class="back-button">
+          <mat-icon>arrow_back</mat-icon> Go back to products
+        </button>
+        
+        <!-- Product Details with increased font sizes -->
+        <h1 class="product-name">{{ p.name }}</h1>
+        <p class="product-price">{{ p.price | currency:'VND':'symbol':'1.0-0' }}</p>
+        <p class="product-description">{{ p.description }}</p>
+        
+        <!-- Add to Cart or other actions here -->
+      </div>
+    </div>
+  }
+  <!-- Show the spinner if the product signal is undefined -->
+  @else {
+    <div class="loading-state-container">
+        <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  }
+</div>

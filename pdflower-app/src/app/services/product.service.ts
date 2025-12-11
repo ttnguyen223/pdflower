@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, doc, addDoc, setDoc, updateDoc, deleteDoc, DocumentReference, serverTimestamp, query, orderBy } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, doc, addDoc, setDoc, getDoc, updateDoc, deleteDoc, DocumentReference, serverTimestamp, query, orderBy, DocumentSnapshot, DocumentData } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Product } from '../models/product.model';
 import { Category } from '../models/category.model'
@@ -61,5 +61,20 @@ export class ProductService {
     const productDocRef = doc(this.firestore, 'products', product.id);
     // Update only the isActive field
     await updateDoc(productDocRef, { isActive: !product.isActive });
+  }
+
+  getProductById(id: string): Observable<Product | undefined> {
+    const productDocRef = doc(this.firestore, 'products', id);
+    // Use 'from' to convert the Promise returned by getDoc into an Observable
+    return from(getDoc(productDocRef)).pipe(
+      map((snapshot: DocumentSnapshot<DocumentData>) => {
+        if (snapshot.exists()) {
+          // Map data to Product interface, manually including the ID
+          return { id: snapshot.id, ...snapshot.data() } as Product;
+        } else {
+          return undefined;
+        }
+      })
+    );
   }
 }

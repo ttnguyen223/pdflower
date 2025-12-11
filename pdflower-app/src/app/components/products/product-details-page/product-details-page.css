@@ -1,0 +1,72 @@
+.product-detail-page-container {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping on small screens */
+    margin: 20px auto;
+    max-width: 1200px;
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.image-gallery {
+    flex: 1 1 50%;
+    position: relative;
+    background-color: #f0f0f0;
+    min-height: 400px; /* Ensure a decent height */
+}
+
+.slideshow-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.slideshow-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    z-index: 10;
+}
+
+.nav-button.prev { left: 10px; }
+.nav-button.next { right: 10px; }
+
+.product-info-panel {
+    flex: 1 1 50%;
+    padding: 30px; /* Increased padding */
+}
+
+.back-button {
+    margin-bottom: 20px;
+}
+
+.product-name { font-size: 2.8em; margin-bottom: 15px; } /* Increased size */
+.product-price { font-size: 2.0em; font-weight: bold; color: green; margin-bottom: 25px; } /* Increased size */
+.product-description { font-size: 1.2em; line-height: 1.6; } /* Increased size */
+
+.loading-state-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 60vh; /* Centers the spinner nicely on the screen */
+    width: 100%;
+    gap: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .product-detail-page-container {
+        flex-direction: column;
+    }
+    .image-gallery {
+        min-height: 300px;
+    }
+}

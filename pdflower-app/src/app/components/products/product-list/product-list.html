@@ -1,16 +1,48 @@
-<!-- product-list.html is already correct as provided in the original request -->
 <div class="container-fluid py-4 px-lg-5">
-  <h1 class="text-center mb-4" *ngIf="category() !== 'all'">
-    {{ category() }}
-  </h1>
+  <div class="controls-container">
+    <!-- Filter & Sort Bar (Professional Look) -->
+  <div class="filter-sort-bar">
+    <div class="filter-controls">
+      <button mat-raised-button color="primary" (click)="openFilterDialog()">
+        <mat-icon>filter_list</mat-icon> Lọc
+      </button>
+      
+      <!-- Display Chips for selected filters -->
+      @if (selectedCategories().length > 0) {
+        <mat-chip-listbox aria-label="Selected filters">
+          @for (filter of selectedCategories(); track filter) {
+            <mat-chip color="accent" selected>
+              {{ filter }}
+              <button matChipRemove [attr.aria-label]="'Remove filter ' + filter" (click)="removeFilter(filter)">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip>
+          }
+        </mat-chip-listbox>
+      }
+    </div>
+
+    <!-- Sort Control (Single Select, aligned right) -->
+    <div class="sort-control">
+      <mat-form-field appearance="outline">
+        <mat-label>Sắp xếp theo</mat-label>
+        <mat-select [(ngModel)]="sortOption">
+          @for (option of sortOptions; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+
   <div class="row g-4">
-    <!-- This loop depends on filteredProducts(), which depends on productList() signal -->
     @for (item of filteredProducts(); track item.id) {
     <div class="col-12 col-sm-6 col-md-4 col-lg-3">
       <div class="card h-100 shadow-sm border-0">
         <img
           [src]="item.mainImageUrl"
-          class="card-img-top object-fit-cover"
+          class="card-img-top object-fit-contain"
           alt="{{ item.name }}"
           title="{{ item.description }}"
         />

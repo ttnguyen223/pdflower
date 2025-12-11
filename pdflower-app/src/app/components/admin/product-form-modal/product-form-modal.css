@@ -110,3 +110,64 @@
 .mat-mdc-form-field {
     width: 100%;
 }
+
+.drop-zone {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.drop-zone:hover {
+  border-color: #666;
+  background-color: #f1f1f1;
+}
+
+.drop-zone mat-icon {
+  font-size: 48px;
+  color: #aaa;
+}
+
+/* Styles for the local preview section */
+.upload-controls-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.file-count-label {
+    flex-grow: 1;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.local-previews-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.local-preview-item {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.remove-local-file-button {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background: rgba(255, 255, 255, 0.7);
+    height: 24px;
+    width: 24px;
+    padding: 0;
+}

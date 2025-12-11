@@ -1,4 +1,4 @@
-import { Component, signal, input, computed, inject } from '@angular/core';
+import { Component, signal, input, computed, inject, OnInit } from '@angular/core';
 import { Product } from '../../../models/product.model';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,18 +9,41 @@ import { serverTimestamp, Timestamp } from '@angular/fire/firestore';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ProductService } from '../../../services/product.service';
 import { startWith } from 'rxjs/operators';
+import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { Category } from '../../../models/category.model';
+import { MatOptionModule } from '@angular/material/core'; 
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';  
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
+import { FilterDialog, FilterDialogData } from '../../dialogs/filter-dialog/filter-dialog';
+import { MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators'
+import { Router } from '@angular/router';
+
+interface SortOption {
+  value: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'recent';
+  label: string;
+}
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatOptionModule,
+    MatCardModule, MatFormFieldModule, MatSelectModule, MatTooltipModule, FormsModule,
+    MatChipsModule
+  ],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
 })
-export class ProductList {
+export class ProductList implements OnInit {
   private cartService = inject(CartService);
   private productService = inject(ProductService);
   private route = inject(ActivatedRoute);
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
   public showCart = false;
 
   category = input<string>();
@@ -32,29 +55,107 @@ export class ProductList {
     // When using startWith(), you don't need the options object { initialValue: [] }
   );
 
-  currentCategory = computed(() => {
+  public allCategories$: Observable<string[]> = this.productService.getCategories().pipe(
+    map((categories: any[]) => categories.map(c => c.name))
+  );
+  public selectedCategories = signal<string[]>([]);
+  public sortOption = signal<SortOption['value']>('recent'); // Default sort: Most Recent
+
+  public sortOptions: SortOption[] = [
+    { value: 'recent', label: 'Mới nhất' },
+    { value: 'price_asc', label: 'Giá: Tăng dần' },
+    { value: 'price_desc', label: 'Giá: Giảm dần' },
+    { value: 'name_asc', label: 'Tên: A - Z' },
+    { value: 'name_desc', label: 'Tên: Z - A' },
+  ];
+
+  ngOnInit(): void {
+    // If a specific category is passed via route input, set it as the initial filter
+    if (this.category() && this.category() !== 'all') {
+      this.selectedCategories.set([this.category()!]);
+    }
+  }
+
+    currentCategory = computed(() => {
     if (this.category()) {
       return this.category()!;
     }
     return this.route.snapshot.data['defaultCategory'] || 'all';
   });
 
-
   filteredProducts = computed(() => {
-    const category = this.currentCategory().toLowerCase();
-    
-    // Use the signal value (which is either [] initially, or the fetched data later)
-    const allProducts = this.productList() ?? []; 
+    const allProducts = this.productList() ?? [];
+    let result = allProducts.filter(p => p.isActive === true);
+    const filters = this.selectedCategories();
+    const sort = this.sortOption();
 
-    if (!category || category === 'all') {
-        return allProducts.filter(p => p.isActive == true);
-    }
-    return allProducts.filter(p =>
-      p.categories.some(productCategory =>
-          productCategory.toLowerCase() === category.toLowerCase()
-      ) && p.isActive === true
-    );
+    // 1. Filter by categories (if any selected)
+    if (filters.length > 0) {
+        result = result.filter(p => 
+            p.categories.some(productCategory => filters.includes(productCategory))
+        );
+    } 
+    // Note: The previous logic of routing to a single category input is replaced by the multi-select filter above.
+
+    // 2. Sort the results
+    return result.sort((a, b) => {
+        switch (sort) {
+            case 'price_asc':
+                return a.price - b.price || a.name.localeCompare(b.name); // Tie-breaker by name
+            case 'price_desc':
+                return b.price - a.price || a.name.localeCompare(b.name); // Tie-breaker by name
+            case 'name_asc':
+                return a.name.localeCompare(b.name);
+            case 'name_desc':
+                return b.name.localeCompare(a.name);
+            case 'recent':
+                // Default: sort by updateDate (or insertDate) Descending, then name Ascending
+                const dateA = new Date(a.updateDate || a.insertDate).getTime();
+                const dateB = new Date(b.updateDate || b.insertDate).getTime();
+                return dateB - dateA || a.name.localeCompare(b.name);
+            default:
+                return 0;
+        }
+    });
   });
+
+  goToProductDetails(product: Product): void {
+    // Navigate to the new route using the product ID
+    this.router.navigate(['/products', product.id]); 
+  }
+
+  openFilterDialog(): void {
+    this.allCategories$.subscribe(allCategoryNames => {
+      
+      const dialogData: FilterDialogData = { // Use the defined interface
+        allCategories: allCategoryNames, // This is now string[], matching the interface
+        selectedCategories: this.selectedCategories()
+      };
+
+      const dialogRef = this.dialog.open(FilterDialog, {
+        width: '400px',
+        data: dialogData, // Pass the correctly typed data object
+      });
+
+      dialogRef.afterClosed().subscribe((result: string[] | undefined) => {
+        if (result !== undefined) {
+          this.selectedCategories.set(result);
+        }
+      });
+    });
+  }
+
+  removeFilter(category: string): void {
+    this.selectedCategories.update(filters => filters.filter(f => f !== category));
+  }
+
+  onCategoryFilterChange(selectedItems: string[]): void {
+    this.selectedCategories.set(selectedItems);
+  }
+
+  onSortChange(selectedSortValue: SortOption['value']): void {
+    this.sortOption.set(selectedSortValue);
+  }
 
   addToCart(item: Product) {
     this.cartService.addToCart(item);

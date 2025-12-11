@@ -4,9 +4,12 @@
   </a>
 </div>
 <mat-toolbar color="primary" class="main-navbar">
-  <button mat-icon-button (click)="openMenu()">
-    <mat-icon>menu</mat-icon>
+  <button mat-icon-button routerLink="/" aria-label="Go home">
+    <mat-icon>home</mat-icon>
   </button>
+  <!-- <button mat-icon-button (click)="openMenu()">
+    <mat-icon>menu</mat-icon>
+  </button> -->
 
   <span class="navbar-spacer"></span>
 
@@ -45,7 +48,7 @@
       <!-- This button is only rendered if isAdmin$ emits 'true' -->
       <button mat-menu-item routerLink="/admin">
         <mat-icon>dashboard</mat-icon>
-        <span>Dashboard</span>
+        <span>Quản lý sản phẩm</span>
       </button>
     }
     <button mat-menu-item (click)="onLogout()">

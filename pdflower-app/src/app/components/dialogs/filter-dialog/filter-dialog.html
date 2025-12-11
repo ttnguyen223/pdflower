@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>Lọc sản phẩm</h2>
+    <mat-dialog-content>
+      <mat-selection-list [(ngModel)]="localSelectedCategories">
+        @for (category of data.allCategories; track category) {
+          <mat-list-option checkboxPosition="before" [value]="category">
+            {{ category }}
+          </mat-list-option>
+        }
+      </mat-selection-list>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="onClear()">Xóa tất cả</button>
+      <button mat-button (click)="onCancel()">Hủy</button>
+      <button mat-raised-button color="primary" [mat-dialog-close]="localSelectedCategories">Áp dụng</button>
+    </mat-dialog-actions>

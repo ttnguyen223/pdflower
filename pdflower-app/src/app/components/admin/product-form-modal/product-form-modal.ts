@@ -1,4 +1,4 @@
-import { Component, Inject, inject, LOCALE_ID } from '@angular/core';
+import { Component, Inject, inject, LOCALE_ID, ViewChild, ElementRef } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 import { ProductService } from '../../../services/product.service';
@@ -13,6 +13,8 @@ import { Observable } from 'rxjs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { CloudinaryService } from '../../../services/cloudinary.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-product-form-modal',
@@ -22,7 +24,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatRadioModule,
     MatCheckboxModule,
     MatCardModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './product-form-modal.html',
   styleUrl: './product-form-modal.css',
@@ -31,9 +34,16 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 export class ProductFormModal {
   form: FormGroup;
   private productService = inject(ProductService);
+  private cloudinaryService = inject(CloudinaryService);
+
   errorMessage: string | null = null;
   categories$: Observable<Category[]>;
+  
+  localImagePreviews: string[] = [];
+  isUploading = false;
+  selectedFiles: File[] = [];
   public sortedImagePreviews: { url: string; isMain: boolean; }[] = [];
+  @ViewChild('fileInput') fileInput!: ElementRef;
 
   // Inject the dialog reference and the data passed in (the product if editing)
   constructor(
@@ -51,22 +61,63 @@ export class ProductFormModal {
       quantity: [data?.quantity || 0, [Validators.required, Validators.min(0)]],
       categories: this.fb.array(data?.categories || [], Validators.required),
       id: [data?.id || null],
-      imageUrls: this.fb.array([]) // This array holds groups of { url: '', isMain: boolean }
+      imageUrls: this.fb.array([]) // Array of {url: string, isMain: boolean} groups
     });
 
-    // Populate existing images from `data`, prioritizing the existing main image flag.
     if (data?.imageUrls && data.imageUrls.length > 0) {
       data.imageUrls.forEach(url => this.addImageUrlGroup(url, data.mainImageUrl === url));
     } else {
-      // Always start with at least one empty input field
-      this.addImageUrlGroup();
+      // Start with one input field if you reintroduce the manual URL input later.
+      // For pure file upload interface, no initial "box" is necessary, just the dropzone.
     }
-
+    
     this.imageUrlsArray.valueChanges.subscribe(() => {
         this.sortImageUrls();
     });
-
     this.sortImageUrls();
+  }
+
+  // --- File Upload Handlers (Re-implemented for Drag & Drop and Cloudinary) ---
+
+  onDragOver(event: Event): void { event.preventDefault(); }
+  onDragLeave(event: Event): void { event.preventDefault(); }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    if (event.dataTransfer?.files) {
+      this.selectedFiles = Array.from(event.dataTransfer.files);
+      this.generateLocalPreviews();
+    }
+  }
+
+  onFileSelected(event: any): void {
+    this.errorMessage = null;
+    this.selectedFiles = Array.from(event.target.files);
+    this.generateLocalPreviews();
+  }
+
+  clearSelectedFiles(): void {
+    this.selectedFiles = [];
+    this.localImagePreviews.forEach(url => URL.revokeObjectURL(url));
+    this.localImagePreviews = [];
+    if (this.fileInput) { this.fileInput.nativeElement.value = null; }
+  }
+
+  private generateLocalPreviews(): void {
+    this.localImagePreviews.forEach(url => URL.revokeObjectURL(url));
+    this.localImagePreviews = [];
+    for (const file of this.selectedFiles) {
+      this.localImagePreviews.push(URL.createObjectURL(file));
+    }
+  }
+
+  removeSelectedFile(index: number): void {
+    URL.revokeObjectURL(this.localImagePreviews[index]);
+    this.selectedFiles.splice(index, 1);
+    this.localImagePreviews.splice(index, 1);
+    if (this.selectedFiles.length === 0 && this.fileInput) {
+      this.fileInput.nativeElement.value = null;
+    }
   }
 
    trackByIndex(index: number): number {
@@ -75,14 +126,12 @@ export class ProductFormModal {
 
   sortImageUrls(): void {
     const currentUrls = this.imageUrlsArray.value;
-    // Filter out invalid URLs for display purposes
     const validUrls = currentUrls.filter((item: any) => item.url && item.url.startsWith('http'));
     
     this.sortedImagePreviews = [...validUrls].sort((a, b) => {
-        // Sort function: if 'a' is main, it comes first (-1). If 'b' is main, it comes first (1).
         if (a.isMain && !b.isMain) return -1;
         if (!a.isMain && b.isMain) return 1;
-        return 0; // Maintain original order otherwise
+        return 0;
     });
   }
   // --- Image URL FormArray Management ---
@@ -93,13 +142,13 @@ export class ProductFormModal {
 
   private createImageUrlGroup(url: string = '', isMain: boolean = false): FormGroup {
     return this.fb.group({
-      url: [url, [Validators.required, Validators.pattern('https?://.*')]], // Basic URL validation
+      url: [url, [Validators.required, Validators.pattern('https?://.*')]],
       isMain: [isMain] 
     });
   }
 
-  addImageUrlGroup(url: string = '', isMain: boolean = false): void {
-    // If adding a new empty row, and it's the first one, default it to main.
+  addImageUrlGroup(url: string, isMain: boolean = false): void {
+    // If we are adding the very first URL, mark it as main automatically
     if (this.imageUrlsArray.length === 0) {
         isMain = true;
     }
@@ -108,17 +157,12 @@ export class ProductFormModal {
 
   removeImageUrlGroup(index: number): void {
     const wasMain = this.imageUrlsArray.at(index).get('isMain')?.value;
-    
     this.imageUrlsArray.removeAt(index);
-
-    // CRITICAL CHANGE: We no longer force a new empty input if the array is empty.
-    // The user can submit with 0 or 1 input box visible (but 'onSave' ensures > 0 valid URLs exist).
-
-    // If the removed item was the main image, make the *new* first item the main one automatically.
+    
+    // If the removed item was the main image and others exist, assign a new main
     if (wasMain && this.imageUrlsArray.length > 0) {
         this.imageUrlsArray.at(0).get('isMain')?.setValue(true);
     }
-    // sortImageUrls() is called via valueChanges subscription
   }
 
   setMainImage(index: number): void {
@@ -186,22 +230,45 @@ export class ProductFormModal {
       return; 
     }
     
+    // START STEP 1: UPLOAD SELECTED FILES
+    if (this.selectedFiles.length > 0) {
+        this.isUploading = true;
+        try {
+            const uploadPromises = this.selectedFiles.map(file => 
+                this.cloudinaryService.uploadImage(file)
+            );
+            const urls: string[] = await Promise.all(uploadPromises);
+            
+            // Add the new URLs to the form array before proceeding to save the product data
+            urls.forEach(url => this.addImageUrlGroup(url, false)); 
+            this.clearSelectedFiles(); // Clear the local file list
+            
+        } catch (error: any) {
+            this.errorMessage = "Tải lên hình ảnh thất bại. " + (error.message || "Vui lòng thử lại.");
+            this.isUploading = false;
+            return; // Stop the save process if upload fails
+        }
+        this.isUploading = false;
+    }
+    // END STEP 1
+
+    // START STEP 2: CONSTRUCT AND SAVE PRODUCT DATA TO FIRESTORE
+
+    if (this.imageUrlsArray.length === 0) {
+        this.errorMessage = "Sản phẩm phải có ít nhất một hình ảnh.";
+        return;
+    }
+
     const formValue = this.form.value;
     const urls: string[] = formValue.imageUrls
       .map((item: { url: string, isMain: boolean }) => item.url)
       .filter((url: string | null | undefined) => !!url && url.startsWith('http'));
 
-    if (urls.length === 0) {
-      this.errorMessage = "Sản phẩm phải có ít nhất một hình ảnh URL hợp lệ.";
-      return;
-    }
-
     const mainImageItem = formValue.imageUrls.find((item: { url: string, isMain: boolean }) => item.isMain);
-    const mainImageUrl: string = mainImageItem?.url || urls[0];
+    const mainImageUrl: string = mainImageItem?.url || urls;
     
     const priceInNumber = this.parseVndPrice(formValue.price);
 
-    // Start with a base object that includes all form values
     const productData: Partial<Product> = {
         ...formValue,
         price: priceInNumber,
@@ -211,22 +278,17 @@ export class ProductFormModal {
 
     try {
       if (productData.id) {
-        // If we have an ID (editing an existing product), update it.
         await this.productService.updateProduct(productData as Product);
       } else {
-        // If we don't have an ID (new product), prepare the data *without* the null ID field.
-
-        // Create a copy and delete the 'id' key explicitly before sending to addDoc
         const dataWithoutId = { ...productData };
         delete dataWithoutId.id; 
-        
         await this.productService.addProduct(dataWithoutId as Omit<Product, 'id'>);
       }
       this.dialogRef.close(true); 
       
     } catch (error: any) {
       console.error("Save failed", error);
-      this.errorMessage = "Failed to save product: " + (error.message || "An unexpected error occurred.");
+      this.errorMessage = "Lưu sản phẩm thất bại: " + (error.message || "Đã xảy ra lỗi không mong muốn.");
     }
   }
 }
