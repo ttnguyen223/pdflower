@@ -2,58 +2,49 @@ body, .page-wrapper {
   margin: 0;
   padding: 0;
   width: 100%;
+  background-color: #fcfbf8; /* Very light beige/off-white for a softer look */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A simple, clean font */
 }
 
 .banner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+  width: 100%; 
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Ensures the image doesn't overflow the container */
+}
+
+.banner {
+  width: 100%; 
+  margin: 0;
+  padding: 0;
+  border-bottom: 3px solid palegoldenrod; 
+  /* Removed overflow: hidden and fixed height/max-height settings */
 }
 
 .banner-image {
-  max-width: 80%;
-  max-height: 200px;
-  height: auto;
-  display: block;
-  margin: 0 auto; 
-}
-
-.account-icon-wrapper {
-  margin-right: 8px;
-}
-
-main {
-  min-height: calc(100vh - 40px); 
-  max-width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 20px;
+  /* Set the image width to 100% of its parent container (.banner) */
+  width: 100%; 
+  /* Allow the height to adjust automatically to maintain the original aspect ratio */
+  height: auto; 
+  display: block; 
+  
+  /* Removed object-fit: cover, so the whole image is displayed */
 }
 
 .main-navbar.mat-toolbar {
-    min-height: 40px !important; 
-    height: 40px !important;
-    background-color: palegoldenrod;
-    color: black; 
-    padding: 0 8px;
+    min-height: 50px !important; /* Slightly taller bar is sometimes cleaner */
+    height: 50px !important;
+    background-color: lightgoldenrodyellow;
+    color: #4a4a4a; /* Dark gray text instead of pure black */
+    padding: 0 16px; /* A little more breathing room */
     display: flex; 
     justify-content: space-between;
     align-items: center;
 }
 
-.navbar-spacer {
-  flex: 1 1 auto;
-}
-
-.navbar-logo-image {
-  max-height: 30px; 
-  height: auto;
-}
-
 .main-navbar button.mat-icon-button {
-    height: 40px; 
-    width: 40px;
+    height: 50px; 
+    width: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -61,7 +52,7 @@ main {
 }
 
 .main-navbar mat-icon {
-    color: black;
+    color: #4a4a4a;
     height: 20px;
     width: 20px;
     font-size: 20px;
@@ -85,11 +76,20 @@ main {
 .user-email-display {
   font-size: 14px;
   margin-right: 15px; /* Add some space between the email and the account icon */
-  color: #333; /* A readable color against palegoldenrod */
+  color: #4a4a4a;
   /* Ensure it doesn't get squished by flexbox properties */
   white-space: nowrap; 
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 200px; /* Prevent extremely long emails from taking too much space */
-  font-weight: bold;
+  font-weight: normal; 
+}
+
+main {
+  /* Keep main content centered */
+  min-height: calc(100vh - 100px); /* Adjust height calculation for new navbar/banner size */
+  max-width: 1200px; /* Slightly wider content area */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5px 20px 20px 20px;
 }

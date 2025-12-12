@@ -8,20 +8,21 @@ import { ActivatedRoute } from '@angular/router';
 import { serverTimestamp, Timestamp } from '@angular/fire/firestore';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ProductService } from '../../../services/product.service';
-import { startWith } from 'rxjs/operators';
+import { startWith, tap } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { Category } from '../../../models/category.model';
 import { MatOptionModule } from '@angular/material/core'; 
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';  
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
-import { FilterDialog, FilterDialogData } from '../../dialogs/filter-dialog/filter-dialog';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators'
 import { Router } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FilterDialog, FilterDialogData } from '../../dialogs/filter-dialog/filter-dialog';
+import { MatMenuModule } from '@angular/material/menu';
 
 interface SortOption {
   value: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'recent';
@@ -33,7 +34,7 @@ interface SortOption {
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule, MatOptionModule,
     MatCardModule, MatFormFieldModule, MatSelectModule, MatTooltipModule, FormsModule,
-    MatChipsModule
+    MatChipsModule, MatProgressSpinnerModule, MatMenuModule
   ],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
@@ -47,12 +48,13 @@ export class ProductList implements OnInit {
   public showCart = false;
 
   category = input<string>();
+  loading = signal(true);
 
   productList = toSignal<Product[]>(
     this.productService.getProducts().pipe(
-      startWith([]) // Ensure it starts immediately with an empty array
+      tap(() => this.loading.set(false)),
+      startWith([])
     )
-    // When using startWith(), you don't need the options object { initialValue: [] }
   );
 
   public allCategories$: Observable<string[]> = this.productService.getCategories().pipe(
@@ -118,23 +120,18 @@ export class ProductList implements OnInit {
         }
     });
   });
-
-  goToProductDetails(product: Product): void {
-    // Navigate to the new route using the product ID
-    this.router.navigate(['/products', product.id]); 
-  }
-
-  openFilterDialog(): void {
+  
+    openFilterDialog(): void {
     this.allCategories$.subscribe(allCategoryNames => {
       
-      const dialogData: FilterDialogData = { // Use the defined interface
-        allCategories: allCategoryNames, // This is now string[], matching the interface
+      const dialogData: FilterDialogData = {
+        allCategories: allCategoryNames,
         selectedCategories: this.selectedCategories()
       };
 
       const dialogRef = this.dialog.open(FilterDialog, {
-        width: '400px',
-        data: dialogData, // Pass the correctly typed data object
+        width: '300px', // Standard Material dialog
+        data: dialogData,
       });
 
       dialogRef.afterClosed().subscribe((result: string[] | undefined) => {
@@ -147,6 +144,11 @@ export class ProductList implements OnInit {
 
   removeFilter(category: string): void {
     this.selectedCategories.update(filters => filters.filter(f => f !== category));
+  }
+
+  goToProductDetails(product: Product): void {
+    // Navigate to the new route using the product ID
+    this.router.navigate(['/products', product.id]); 
   }
 
   onCategoryFilterChange(selectedItems: string[]): void {

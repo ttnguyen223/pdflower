@@ -1,15 +1,24 @@
-<h2 mat-dialog-title>Lọc sản phẩm</h2>
-    <mat-dialog-content>
-      <mat-selection-list [(ngModel)]="localSelectedCategories">
-        @for (category of data.allCategories; track category) {
-          <mat-list-option checkboxPosition="before" [value]="category">
-            {{ category }}
-          </mat-list-option>
-        }
-      </mat-selection-list>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="onClear()">Xóa tất cả</button>
-      <button mat-button (click)="onCancel()">Hủy</button>
-      <button mat-raised-button color="primary" [mat-dialog-close]="localSelectedCategories">Áp dụng</button>
-    </mat-dialog-actions>
+<!-- Wrapper for the header content -->
+<div class="dialog-header">
+  <h2 mat-dialog-title>Lọc theo danh mục</h2>
+</div>
+
+<mat-dialog-content class="dialog-content-wrapper">
+  @for (category of data.allCategories; track category) {
+    <mat-checkbox 
+      [checked]="isSelected(category)" 
+      (change)="toggleSelection(category, $event)"
+      color="primary"
+    >
+      {{ category }}
+    </mat-checkbox>
+  }
+</mat-dialog-content>
+
+<!-- Wrapper for the action buttons -->
+<div class="dialog-actions-wrapper">
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Hủy</button>
+    <button mat-raised-button color="primary" (click)="onApply()" cdkFocusInitial>Áp dụng</button>
+  </mat-dialog-actions>
+</div>

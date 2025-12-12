@@ -1,44 +1,97 @@
-.filter-sort-bar {
+/* Base styles (Desktop-first approach: right-aligned controls, left-aligned chips) */
+.filter-sort-header {
   display: flex;
-  justify-content: space-between;
-  /* Add align-items: center to vertically center all direct children */
+  justify-content: flex-end; /* Aligns to the right by default on desktop */
   align-items: center; 
-  margin-bottom: 20px;
+  margin-bottom: 10px; 
   padding: 10px 0;
   border-bottom: 1px solid #eee;
 }
 
-.filter-controls {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  flex-wrap: wrap;
+/* Container for the chips, spans full width on desktop (left-aligned by default) */
+.selected-filters-container {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap; /* Ensures filters wrap to the next line */
+    gap: 8px;
+    padding: 0 0 10px 0;
+    border-bottom: 1px solid #eee;
+    /* On desktop, justify-content: flex-start; is implied default */
+}
+
+.clear-all-filters-btn {
+    /* Optional: subtle styling adjustment for the clear button */
+    font-size: 14px;
+    line-height: 32px; /* Matches height of standard mat chips */
+    height: 32px;
+    padding: 0 8px;
+}
+
+/* --- Mobile-specific styles using a Media Query (e.g., screen width < 768px) --- */
+@media (max-width: 767px) {
+  /* NOTE: .filter-sort-header centering removed here. It now inherits flex-end from the base style. */
+
+  /* Center the list of selected filter chips (even when multiple are selected and wrap) */
+  .selected-filters-container {
+    /* This is the key part: Centers the entire block of wrapped chips horizontally */
+    justify-content: center; 
+    padding-left: 0;
+    padding-right: 0;
+    text-align: center; /* Ensures text alignment helps centering in rare cases */
+  }
+  
+  /* Ensure the internal Angular Material chip container also respects centering */
+  .selected-filters-container mat-chip-listbox {
+      display: flex; /* Ensure it behaves as a flex container */
+      flex-wrap: wrap; /* Ensure chips wrap */
+      justify-content: center; /* Centers individual chips horizontally within the listbox */
+  }
+}
+
+
+/* The right controls wrapper now just needs some gap management */
+.right-controls-wrapper { 
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between the sort dropdown and the filter icon */
+}
+
+/* --- Rest of the existing CSS follows (general styling) --- */
+
+.small-icon-btn {
+  width: 36px; 
+  height: 36px; 
+}
+
+.small-icon-btn .mat-icon {
+    font-size: 18px; 
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+}
+
+.icon-only-filter-btn {
+  flex-shrink: 0;
 }
 
 /* Target the specific form field used for sorting to adjust alignment */
 .sort-control .mat-mdc-form-field {
-    width: 200px;
-    /* Optional: reduce the bottom margin slightly if needed for a perfect fit */
+    width: 145px;
+    min-width: 150px; 
     margin-bottom: -1.34375em; 
 }
 
-/* Ensure chips look good */
-mat-chip-listbox {
+.loading-state-container {
   display: flex;
-  gap: 5px;
-}
-
-
-.card-img-top {
-    object-fit: contain; 
-    height: 250px; 
-    width: 100%;
-    background-color: #ffffff;
+  justify-content: center;
+  align-items: center;
+  height: 200px; 
+  margin-top: 50px;
 }
 
 .card-img-top {
-    object-fit: contain !important; /* Use !important just in case Bootstrap or other styles override it */
-    object-position: center !important; /* Centers the image within the box */
+    object-fit: contain !important; 
+    object-position: center !important; 
     height: 250px; 
     width: 100%; 
     background-color: #ffffff; 
@@ -56,3 +109,4 @@ mat-chip-listbox {
 .add-to-cart-btn:hover mat-icon {
     color: #C6B06A;
 }
+

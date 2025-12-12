@@ -1,72 +1,94 @@
-<div class="container-fluid py-4 px-lg-5">
-  <div class="controls-container">
-    <!-- Filter & Sort Bar (Professional Look) -->
-  <div class="filter-sort-bar">
-    <div class="filter-controls">
-      <button mat-raised-button color="primary" (click)="openFilterDialog()">
-        <mat-icon>filter_list</mat-icon> Lọc
-      </button>
-      
-      <!-- Display Chips for selected filters -->
-      @if (selectedCategories().length > 0) {
-        <mat-chip-listbox aria-label="Selected filters">
-          @for (filter of selectedCategories(); track filter) {
-            <mat-chip color="accent" selected>
-              {{ filter }}
-              <button matChipRemove [attr.aria-label]="'Remove filter ' + filter" (click)="removeFilter(filter)">
-                <mat-icon>cancel</mat-icon>
-              </button>
-            </mat-chip>
-          }
-        </mat-chip-listbox>
-      }
-    </div>
+<div class="container-fluid product-list-wrapper"> 
 
-    <!-- Sort Control (Single Select, aligned right) -->
-    <div class="sort-control">
-      <mat-form-field appearance="outline">
-        <mat-label>Sắp xếp theo</mat-label>
-        <mat-select [(ngModel)]="sortOption">
-          @for (option of sortOptions; track option.value) {
-            <mat-option [value]="option.value">{{ option.label }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+  <!-- Desktop View Filter/Sort Bar -->
+  <div class="filter-sort-header">
+    
+    <!-- RIGHT SIDE: Sort Dropdown AND Filter Icon Button (new combined wrapper) -->
+    <div class="right-controls-wrapper"> 
+        <!-- Filter Icon Button -->
+        <button 
+          mat-icon-button 
+          class="icon-only-filter-btn" 
+          (click)="openFilterDialog()" 
+          matTooltip="Lọc sản phẩm"
+          matTooltipPosition="above"
+          aria-label="Filter products">
+            <mat-icon>filter_alt</mat-icon> <!-- Funnel icon -->
+        </button>
+        <!-- Sort Control -->
+        <div class="sort-control">
+            <mat-form-field appearance="outline" class="sort-form-field small-sort-field">
+                <mat-select [(ngModel)]="sortOption" disableRipple>
+                    @for (option of sortOptions; track option.value) {
+                        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        </div>
     </div>
   </div>
 
+  <!-- Selected Filters Display (Now below the main header, spanning full width) -->
+  @if (selectedCategories().length > 0) {
+    <div class="selected-filters-container">
+        <mat-chip-listbox aria-label="Selected filters">
+            @for (filter of selectedCategories(); track filter) {
+                <mat-chip color="accent" selected>
+                    {{ filter }}
+                    <button matChipRemove [attr.aria-label]="'Remove filter ' + filter" (click)="removeFilter(filter)">
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                </mat-chip>
+            }
+        </mat-chip-listbox>
+    </div>
+  }
 
-  <div class="row g-4">
-    @for (item of filteredProducts(); track item.id) {
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-      <div class="card h-100 shadow-sm border-0">
-        <img
-          [src]="item.mainImageUrl"
-          class="card-img-top object-fit-contain"
-          alt="{{ item.name }}"
-          title="{{ item.description }}"
-        />
+  <!-- Conditional Rendering Block for Products or Loader (rest of HTML remains the same) -->
+  @if (loading()) {
+      <!-- Show spinner while loading is true -->
+      <div class="loading-state-container">
+          <mat-spinner diameter="50"></mat-spinner>
+      </div>
+  } @else {
+    <!-- Show product list once loading is false -->
+    <div class="row g-4">
+      @for (item of filteredProducts(); track item.id) {
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <!-- Added (click) handler to navigate -->
+        <div class="card h-100 shadow-sm border-0">
+          <img
+            [src]="item.mainImageUrl"
+            class="card-img-top object-fit-contain"
+            alt="{{ item.name }}"
+            title="{{ item.description }}"
+          />
 
-        <div class="card-body text-center p-3">
-          <h5 class="card-title fw-semibold text-dark mb-0">
-            {{ item.name }}
-          </h5>
-          <p class="card-text fw-bold text-success mb-0">{{ item.price | number : '1.0-0' }}₫</p>
-          @if (showCart) {
-          <button
-            mat-icon-button
-            class="add-to-cart-btn"
-            color="primary"
-            (click)="addToCart(item)"
-            matTooltip="Add item to cart"
-            matTooltipPosition="above"
-          >
-            <mat-icon>add</mat-icon>
-          </button>
-          }
+          <div class="card-body text-center p-3">
+            <h5 class="card-title fw-semibold text-dark mb-0">
+              {{ item.name }}
+            </h5>
+            <p class="card-text fw-bold text-success mb-0">{{ item.price | number : '1.0-0' }}₫</p>
+            @if (showCart) {
+            <button
+              mat-icon-button
+              class="add-to-cart-btn"
+              color="primary"
+              (click)="$event.stopPropagation(); addToCart(item)" 
+              matTooltip="Add item to cart"
+              matTooltipPosition="above"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+            }
+          </div>
         </div>
       </div>
+      } @empty {
+          <div class="col-12">
+            <p class="text-center mt-4">Không tìm thấy sản phẩm nào phù hợp với bộ lọc.</p>
+          </div>
+      }
     </div>
-    }
-  </div>
+  }
 </div>

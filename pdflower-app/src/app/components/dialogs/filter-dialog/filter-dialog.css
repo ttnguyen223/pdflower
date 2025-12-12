@@ -1,0 +1,52 @@
+    /* Ensure the overall dialog container is configured for professional padding */
+    :host {
+        display: block;
+    }
+
+    /* 1. Header Section Styling: background color palegoldenrod */
+    .dialog-header {
+    background-color: palegoldenrod;
+    padding: 16px 24px;
+    /* These inherit styles ensure the header follows the dialog's rounded corners */
+    border-top-left-radius: inherit; 
+    border-top-right-radius: inherit;
+
+    /* Ensures header elements stay inline and don't wrap */
+    display: flex; 
+    align-items: center; 
+    }
+
+    /* Ensure the mat-dialog-title inside the wrapper doesn't have default margin issues */
+    .dialog-header h2 {
+    margin: 0;
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    }
+
+    /* 2. Content Section Styling: little whitespaces between items */
+    .dialog-content-wrapper {
+    padding: 20px 24px;
+    /* Use Flexbox for easy vertical spacing management */
+    display: flex;
+    flex-direction: column;
+    /* Sets a gap between all checkbox items */
+    gap: 12px; 
+    }
+
+    /* 3. Actions Section Styling: make it look professional */
+    /* Style the wrapper div to match the padding standard of the content area */
+    .dialog-actions-wrapper {
+    padding: 0 24px 16px 24px;
+    }
+
+    /* Ensure the mat-dialog-actions inside the wrapper doesn't have default margin issues */
+    .dialog-actions-wrapper mat-dialog-actions {
+        margin: 0;
+        padding: 0; 
+    }
+
+    /* Optional: Add slight spacing between the action buttons themselves */
+    .dialog-actions-wrapper button {
+    margin-left: 8px;
+    }
