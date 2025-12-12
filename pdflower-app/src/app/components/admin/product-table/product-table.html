@@ -1,4 +1,4 @@
-<mat-toolbar color="primary">
+<mat-toolbar color="primary" class="admin-toolbar"> <!-- Added class "admin-toolbar" -->
     <span>Quản lý sản phẩm</span>
     <span class="toolbar-spacer"></span>
     <button mat-raised-button color="accent" (click)="openProductModal()">
@@ -6,10 +6,10 @@
     </button>
 </mat-toolbar>
 
-<div class="table-container">
-  <!-- Use async pipe with products$ observable -->
+<div class="table-container responsive-table"> <!-- Added class "responsive-table" -->
   <table mat-table [dataSource]="(products$ | async) ?? []" class="mat-elevation-z8">
-
+    <!-- ... all your ng-container definitions remain the same ... -->
+    
     <!-- Image Preview Column -->
     <ng-container matColumnDef="imagePreview">
       <th mat-header-cell *matHeaderCellDef> Ảnh </th>
