@@ -1,50 +1,37 @@
-<!-- src/app/components/products/product-details-page/product-details-page.component.html -->
+<div class="details-container">
+  <button mat-button color="primary" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon> Quay lại danh sách sản phẩm
+  </button>
 
-<!-- Use a container (e.g., div or ng-container) to host the @if block -->
-<div>
-  @if (product(); as p) {
-    <!-- The main container is now safely inside the @if block -->
-    <div class="product-detail-page-container">
-      <div class="image-gallery">
-        <!-- Slideshow Area -->
-        <div class="slideshow-wrapper">
-          <img 
-            [src]="p.imageUrls[currentImageIndex()]" 
-            alt="{{ p.name }}" 
-            class="slideshow-image"
-          />
+  @if (product$ | async; as product) {
+    <mat-card *ngIf="product" class="product-card">
+      <div class="row">
+        <!-- Image Gallery (Left Column) -->
+        <div class="col-md-6 image-gallery">
+          <img [src]="mainImage() || product.mainImageUrl" alt="{{ product.name }}" class="main-image">
           
-          <!-- Navigation Buttons -->
-          @if (p.imageUrls.length > 1) {
-            <button mat-icon-button class="nav-button prev" (click)="prevImage()">
-              <mat-icon>chevron_left</mat-icon>
-            </button>
-            <button mat-icon-button class="nav-button next" (click)="nextImage()">
-              <mat-icon>chevron_right</mat-icon>
-            </button>
-          }
+          <div class="thumbnail-wrapper">
+            @for (imageUrl of product.imageUrls; track imageUrl) {
+              <img 
+                [src]="imageUrl" 
+                (click)="setMainImage(imageUrl)"
+                [class.active]="mainImage() === imageUrl"
+                class="thumbnail"
+                alt="Thumbnail of {{ product.name }}"
+              />
+            }
+          </div>
+        </div>
+
+        <!-- Product Details (Right Column) -->
+        <div class="col-md-6 details-content">
+          <h1 class="product-name">{{ product.name }}</h1>
+          <p class="product-price">{{ product.price | currency:'VND':'symbol':'1.0-0' }}</p>
+          
+          <h2 *ngIf="product.description">Mô tả sản phẩm:</h2>
+          <p class="product-description">{{ product.description }}</p>
         </div>
       </div>
-
-      <div class="product-info-panel">
-        <!-- Go Back to Products Button -->
-        <button mat-flat-button color="primary" (click)="goBackToProducts()" class="back-button">
-          <mat-icon>arrow_back</mat-icon> Go back to products
-        </button>
-        
-        <!-- Product Details with increased font sizes -->
-        <h1 class="product-name">{{ p.name }}</h1>
-        <p class="product-price">{{ p.price | currency:'VND':'symbol':'1.0-0' }}</p>
-        <p class="product-description">{{ p.description }}</p>
-        
-        <!-- Add to Cart or other actions here -->
-      </div>
-    </div>
-  }
-  <!-- Show the spinner if the product signal is undefined -->
-  @else {
-    <div class="loading-state-container">
-        <mat-spinner diameter="50"></mat-spinner>
-    </div>
+    </mat-card>
   }
 </div>

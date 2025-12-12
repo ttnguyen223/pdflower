@@ -56,7 +56,7 @@
       @for (item of filteredProducts(); track item.id) {
       <div class="col-12 col-sm-6 col-md-4 col-lg-3">
         <!-- Added (click) handler to navigate -->
-        <div class="card h-100 shadow-sm border-0">
+        <div class="card h-100 shadow-sm border-0" (click)="goToProductDetails(item)">
           <img
             [src]="item.mainImageUrl"
             class="card-img-top object-fit-contain"

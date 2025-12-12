@@ -14,10 +14,6 @@ export const routes: Routes = [
         component: ProductList,
         data: { defaultCategory: 'all' } 
     },
-    {
-        path: 'products/:category',
-        loadComponent: () => import('./components/products/product-list/product-list').then(m => m.ProductList)
-    },
     { path: 'login', component: Login },
     { path: 'register', component: Register},
     { path: 'cart', component: CartPage },

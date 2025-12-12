@@ -39,7 +39,7 @@ interface SortOption {
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
 })
-export class ProductList implements OnInit {
+export class ProductList {
   private cartService = inject(CartService);
   private productService = inject(ProductService);
   private route = inject(ActivatedRoute);
@@ -70,13 +70,6 @@ export class ProductList implements OnInit {
     { value: 'name_asc', label: 'Tên: A - Z' },
     { value: 'name_desc', label: 'Tên: Z - A' },
   ];
-
-  ngOnInit(): void {
-    // If a specific category is passed via route input, set it as the initial filter
-    if (this.category() && this.category() !== 'all') {
-      this.selectedCategories.set([this.category()!]);
-    }
-  }
 
     currentCategory = computed(() => {
     if (this.category()) {
@@ -148,6 +141,7 @@ export class ProductList implements OnInit {
 
   goToProductDetails(product: Product): void {
     // Navigate to the new route using the product ID
+    console.log("trigger!")
     this.router.navigate(['/products', product.id]); 
   }
 

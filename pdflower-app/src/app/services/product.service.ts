@@ -64,12 +64,12 @@ export class ProductService {
   }
 
   getProductById(id: string): Observable<Product | undefined> {
-    const productDocRef = doc(this.firestore, 'products', id);
-    // Use 'from' to convert the Promise returned by getDoc into an Observable
+    const productDocRef = doc(this.firestore, `products/${id}`);
+    // Use the 'from' operator to convert the Promise-based getDoc into an Observable
     return from(getDoc(productDocRef)).pipe(
       map((snapshot: DocumentSnapshot<DocumentData>) => {
         if (snapshot.exists()) {
-          // Map data to Product interface, manually including the ID
+          // Map the data and include the ID
           return { id: snapshot.id, ...snapshot.data() } as Product;
         } else {
           return undefined;
