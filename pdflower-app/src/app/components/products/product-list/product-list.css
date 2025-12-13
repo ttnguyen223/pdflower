@@ -61,6 +61,7 @@
       /* width is now automatic based on content + padding */
       min-width: unset; /* Revert minimum width constraint */
       flex-grow: 0; /* Prevents it from growing to fill space */
+      white-space: nowrap; 
   }
 
   /* Specific width control for the sort input in mobile view */
@@ -92,7 +93,8 @@
     box-shadow: none;
     border: 1px solid rgba(0, 0, 0, 0.38); 
     color: rgba(0, 0, 0, 0.87) !important; 
-    background-color: #fff; 
+    background-color: #fff;
+    font-weight: normal !important; 
 }
 
 /* Add the hover effect for the filter button */
