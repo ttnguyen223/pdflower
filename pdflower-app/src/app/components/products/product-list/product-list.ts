@@ -104,15 +104,26 @@ export class ProductList {
             case 'name_desc':
                 return b.name.localeCompare(a.name);
             case 'recent':
-                // Default: sort by updateDate (or insertDate) Descending, then name Ascending
-                const dateA = new Date(a.updateDate || a.insertDate).getTime();
-                const dateB = new Date(b.updateDate || b.insertDate).getTime();
+                const dateA = this.getTimestampValue(a.updateDate || a.insertDate);
+                const dateB = this.getTimestampValue(b.updateDate || b.insertDate);
                 return dateB - dateA || a.name.localeCompare(b.name);
             default:
                 return 0;
         }
     });
   });
+
+  private getTimestampValue(dateField: any): number {
+    if (dateField instanceof Date) {
+      return dateField.getTime();
+    }
+    // Assumes Firestore returns an object with seconds and nanoseconds if not a JS Date
+    if (dateField && typeof dateField === 'object' && 'seconds' in dateField) {
+      return dateField.seconds * 1000; // Convert seconds to milliseconds
+    }
+    // Fallback if the format is unexpected
+    return new Date(dateField).getTime(); 
+  }
   
     openFilterDialog(): void {
     this.allCategories$.subscribe(allCategoryNames => {

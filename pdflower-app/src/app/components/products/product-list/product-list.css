@@ -1,7 +1,7 @@
-/* Base styles (Desktop-first approach: right-aligned controls, left-aligned chips) */
+/* Base styles (Desktop-first approach) */
 .filter-sort-header {
   display: flex;
-  justify-content: flex-end; /* Aligns to the right by default on desktop */
+  justify-content: space-between; 
   align-items: center; 
   margin-bottom: 10px; 
   padding: 10px 0;
@@ -12,57 +12,132 @@
 .selected-filters-container {
     margin-bottom: 20px;
     display: flex;
-    flex-wrap: wrap; /* Ensures filters wrap to the next line */
+    flex-wrap: wrap; 
     gap: 8px;
     padding: 0 0 10px 0;
     border-bottom: 1px solid #eee;
-    /* On desktop, justify-content: flex-start; is implied default */
 }
 
 .clear-all-filters-btn {
-    /* Optional: subtle styling adjustment for the clear button */
     font-size: 14px;
-    line-height: 32px; /* Matches height of standard mat chips */
+    line-height: 32px; 
     height: 32px;
     padding: 0 8px;
 }
 
 /* --- Mobile-specific styles using a Media Query (e.g., screen width < 768px) --- */
 @media (max-width: 767px) {
-  /* NOTE: .filter-sort-header centering removed here. It now inherits flex-end from the base style. */
+  .filter-sort-header {
+    /* REMOVED: flex-direction: column; from original code to keep items inline */
+    align-items: center; /* Ensure they remain centered vertically even in mobile view */
+    gap: 10px; 
+  }
 
-  /* Center the list of selected filter chips (even when multiple are selected and wrap) */
   .selected-filters-container {
-    /* This is the key part: Centers the entire block of wrapped chips horizontally */
     justify-content: center; 
     padding-left: 0;
     padding-right: 0;
-    text-align: center; /* Ensures text alignment helps centering in rare cases */
+    text-align: center;
   }
   
-  /* Ensure the internal Angular Material chip container also respects centering */
   .selected-filters-container mat-chip-listbox {
-      display: flex; /* Ensure it behaves as a flex container */
-      flex-wrap: wrap; /* Ensure chips wrap */
-      justify-content: center; /* Centers individual chips horizontally within the listbox */
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+  }
+
+  .right-controls-wrapper {
+      /* Removed 'width: 100%' from original code */
+      justify-content: flex-end; 
+  }
+  
+  /* Ensure the filter button doesn't take full width in mobile */
+  .text-filter-btn {
+      width: auto;
+      flex-grow: 0;
+  }
+
+  .as-outlined-input {
+      /* width is now automatic based on content + padding */
+      min-width: unset; /* Revert minimum width constraint */
+      flex-grow: 0; /* Prevents it from growing to fill space */
+  }
+
+  /* Specific width control for the sort input in mobile view */
+  .sort-control .mat-mdc-form-field {
+      width: 130px; /* Adjust width to fit nicely on narrow screens */
+      min-width: unset; 
   }
 }
 
-
-/* The right controls wrapper now just needs some gap management */
 .right-controls-wrapper { 
     display: flex;
+    align-items: center; 
+    gap: 16px; 
+}
+
+/* --- Start of Styles to align button and select box --- */
+
+.sort-form-field,
+.as-form-field-control {
+    height: 56px; 
+    box-sizing: border-box; 
+}
+
+.as-form-field-control {
+    min-height: 56px; 
+    line-height: 56px; 
+    padding: 0 16px; 
+    border-radius: 4px; 
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.38); 
+    color: rgba(0, 0, 0, 0.87) !important; 
+    background-color: #fff; 
+}
+
+/* Add the hover effect for the filter button */
+.as-outlined-input:hover {
+    background-color: palegoldenrod !important; 
+    cursor: pointer;
+}
+
+/* Target the specific form field used for sorting to adjust width */
+.sort-control .mat-mdc-form-field {
+    width: 145px;
+    min-width: 150px; 
+    margin-bottom: 0 !important; 
+}
+
+/* --- NEW: Hover effect for the sort textbox (mat-form-field) --- */
+/* Target the internal container that holds the background color */
+.sort-form-field .mat-mdc-form-field-flex {
+    transition: background-color 0.2s ease; /* Smooth transition */
+}
+
+.sort-form-field:hover .mat-mdc-form-field-flex {
+    background-color: palegoldenrod !important;
+    cursor: pointer;
+}
+/* --- END NEW STYLES --- */
+
+
+/* --- Form Field Specific Overrides (Optional but highly recommended for consistency) --- */
+.mat-form-field-appearance-outline .mat-form-field-wrapper {
+    margin: 0 !important; 
+    padding-bottom: 0 !important;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-flex {
+    height: 100%; 
     align-items: center;
-    gap: 5px; /* Space between the sort dropdown and the filter icon */
 }
 
 /* --- Rest of the existing CSS follows (general styling) --- */
-
 .small-icon-btn {
   width: 36px; 
   height: 36px; 
 }
-
+/* ... rest of your CSS for cards ... */
 .small-icon-btn .mat-icon {
     font-size: 18px; 
     width: 18px;
@@ -72,13 +147,6 @@
 
 .icon-only-filter-btn {
   flex-shrink: 0;
-}
-
-/* Target the specific form field used for sorting to adjust alignment */
-.sort-control .mat-mdc-form-field {
-    width: 145px;
-    min-width: 150px; 
-    margin-bottom: -1.34375em; 
 }
 
 .loading-state-container {
@@ -109,4 +177,3 @@
 .add-to-cart-btn:hover mat-icon {
     color: #C6B06A;
 }
-

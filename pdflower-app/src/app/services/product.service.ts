@@ -25,7 +25,7 @@ export class ProductService {
     // Create a query that orders the collection by the 'name' field alphabetically (ascending is default)
     const categoriesQuery = query(
       categoriesCollectionRef, 
-      orderBy('name', 'asc') 
+      orderBy('order', 'asc')
     );
 
     // Use collectionData with the new query

@@ -1,4 +1,30 @@
-
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+/* In your global styles.scss or styles.css */
+
+/* CRITICAL FIX: Remove default margin that causes height misalignment/overhang on form fields */
+.mat-mdc-form-field-wrapper {
+    margin: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Overrides from previous requests */
+.mat-mdc-option:hover:not(.mat-mdc-option-disabled),
+.mat-mdc-option.mat-mdc-option-active,
+.mat-mdc-option.mat-selected:not(.mat-option-multiple):not(.mat-mdc-option-disabled) {
+    background-color: palegoldenrod !important; 
+    color: rgba(0, 0, 0, 0.87) !important;
+}
+
+/* --- NEW: Change color of the selected text/checkmark icon in the closed select box --- */
+
+/* This changes the color of the text displayed in the input field once selected */
+.mat-mdc-select-value-text {
+    color: rgba(0, 0, 0, 0.87) !important;
+}
+
+/* This targets the checkmark icon used for selected items within the dropdown */
+.mat-pseudo-checkbox-checked {
+    background-color: palegoldenrod !important; /* Or a slightly darker gold */
+}
