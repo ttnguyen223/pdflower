@@ -46,7 +46,7 @@
         <div class="col-md-6 details-info-section">
           <div class="info-header">
             <h1 class="product-title">{{ product.name }}</h1>
-            <p class="product-price-tag">{{ product.price | currency:'VND':'symbol':'1.0-0' }}</p>
+            <p class="product-price-tag">{{ product.price | number:'1.0-0' }}₫</p>
           </div>
 
           <mat-divider *ngIf="product.description"></mat-divider>

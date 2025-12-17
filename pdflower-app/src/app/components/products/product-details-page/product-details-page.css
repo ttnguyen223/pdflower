@@ -194,6 +194,12 @@
 
 .back-button {
     margin-bottom: 20px;
+    color: black !important;
+    font-weight: 400 !important; 
+}
+
+::ng-deep .back-button .mdc-button__label {
+    font-weight: 400 !important;
 }
 
 .product-card {
@@ -296,7 +302,7 @@
 }
 
 .thumbnail-item.active {
-    border-color: #3f51b5;
+    border-color: palegoldenrod;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(63, 81, 181, 0.2);
 }
@@ -318,12 +324,12 @@
 .product-price-tag {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #4CAF50;
+    color: #198754;
     margin-bottom: 25px;
 }
 
 .currency-symbol {
-    color: #4CAF50; /* Ký hiệu tiền màu xanh lá */
+    color: #198754;  /* Ký hiệu tiền màu xanh lá */
     margin-right: 5px;
     font-size: 1.3rem;
     vertical-align: middle;
