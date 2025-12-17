@@ -171,3 +171,8 @@
     width: 24px;
     padding: 0;
 }
+
+.product-description-display {
+    white-space: pre-wrap;
+    word-wrap: break-word; /* Giúp bẻ dòng nếu từ quá dài */
+}

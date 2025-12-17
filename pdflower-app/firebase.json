@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "pdflower",
     "public": "dist/pdflower-app/browser",
     "ignore": [
       "firebase.json",

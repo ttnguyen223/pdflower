@@ -8,20 +8,28 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-product-details-page',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatCardModule, CurrencyPipe, MatProgressSpinnerModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    CurrencyPipe,
+    MatProgressSpinnerModule,
+    MatDividerModule
+  ],
   templateUrl: './product-details-page.html',
   styleUrl: './product-details-page.css',
 })
-
 export class ProductDetailsPage implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private productService = inject(ProductService);
-  
+
   product$: Observable<Product | undefined> | undefined;
   mainImage = signal<string | undefined>(undefined);
   loading = signal(true);
@@ -30,17 +38,17 @@ export class ProductDetailsPage implements OnInit {
     // Read the 'id' parameter from the route and use switchMap to fetch the product
     this.product$ = this.route.paramMap.pipe(
       tap(() => this.loading.set(true)), // Start loading
-      switchMap(params => {
+      switchMap((params) => {
         const id = params.get('id');
         if (id) {
           return this.productService.getProductById(id);
         } else {
-          return of(undefined); 
+          return of(undefined);
         }
       }),
-      tap(product => {
+      tap((product) => {
         if (product && product.mainImageUrl) {
-            this.mainImage.set(product.mainImageUrl);
+          this.mainImage.set(product.mainImageUrl);
         }
       }),
       finalize(() => this.loading.set(false)) // Stop loading when observable completes (emits or errors)
@@ -53,5 +61,17 @@ export class ProductDetailsPage implements OnInit {
 
   setMainImage(imageUrl: string): void {
     this.mainImage.set(imageUrl);
+  }
+
+  nextImage(urls: string[]): void {
+    const current = this.mainImage() || urls[0];
+    const idx = urls.indexOf(current);
+    this.setMainImage(urls[(idx + 1) % urls.length]);
+  }
+
+  prevImage(urls: string[]): void {
+    const current = this.mainImage() || urls[0];
+    const idx = urls.indexOf(current);
+    this.setMainImage(urls[(idx - 1 + urls.length) % urls.length]);
   }
 }

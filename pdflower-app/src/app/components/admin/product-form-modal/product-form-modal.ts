@@ -271,6 +271,7 @@ export class ProductFormModal {
 
     const productData: Partial<Product> = {
         ...formValue,
+        description: formValue.description?.trim(),
         price: priceInNumber,
         imageUrls: urls,
         mainImageUrl: mainImageUrl,

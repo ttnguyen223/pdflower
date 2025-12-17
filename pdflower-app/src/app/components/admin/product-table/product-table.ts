@@ -11,6 +11,10 @@ import { Observable, map } from 'rxjs';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { DateTimeUtils } from '../../../utilities/date-time-utils';
+import { ConfirmationDialog } from '../../dialogs/confirmation-dialog/confirmation-dialog';
+import { MessageDialog } from '../../dialogs/message-dialog/message-dialog';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product-table',
@@ -48,22 +52,9 @@ export class ProductTable implements OnInit {
     // We create a copy with slice() before sorting to maintain immutability 
     // and avoid potential side effects if the original array reference is used elsewhere.
     return products.slice().sort((a, b) => {
-      // Determine which date to use for comparison for product A and B
-      const dateA = a.updateDate || a.insertDate;
-      const dateB = b.updateDate || b.insertDate;
-
-      // Handle cases where dates might be missing entirely (though unlikely if required fields)
-      if (!dateA && !dateB) return 0;
-      if (!dateA) return 1; // Put b before a if a has no date
-      if (!dateB) return -1; // Put a before b if b has no date
-
-      // Convert dates to numbers for easy comparison (timestamp)
-      const timeA = new Date(dateA).getTime();
-      const timeB = new Date(dateB).getTime();
-
-      // Sort in descending order (newest first)
-      // If timeB > timeA, returns a positive number, putting b before a.
-      return timeB - timeA; 
+      const dateA = DateTimeUtils.getTimestampValue(a.updateDate || a.insertDate);
+      const dateB = DateTimeUtils.getTimestampValue(b.updateDate || b.insertDate);
+      return dateB - dateA || a.name.localeCompare(b.name);
     });
   }
 
@@ -91,18 +82,39 @@ export class ProductTable implements OnInit {
   }
 
   deleteProduct(id: string): void {
-    if (confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
-      this.productService.deleteProduct(id).catch((err) => {
-        console.error('Error deleting product:', err);
-        alert('Failed to delete product. Check console for details.');
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmationDialog, {
+      width: '350px',
+      data: { 
+        message: 'Bạn có chắc chắn muốn xóa sản phẩm này không? Hành động này không thể hoàn tác.' 
+      },
+    });
+
+    dialogRef.afterClosed().pipe(take(1)).subscribe(result => {
+      if (result === true) {
+        this.productService.deleteProduct(id).catch((err) => {
+          console.error('Error deleting product:', err);
+          this.showErrorMessage(
+            'Lỗi xóa sản phẩm', 
+            'Không thể xóa sản phẩm. Vui lòng kiểm tra lại hoặc thử lại sau.'
+          );
+        });
+      }
+    });
   }
 
   toggleActiveStatus(product: Product): void {
     this.productService.toggleProductActivity(product).catch((err) => {
       console.error('Error toggling status:', err);
-      alert('Failed to change product status.');
+      this.showErrorMessage('Lỗi cập nhật trạng thái', 'Không thể thay đổi trạng thái sản phẩm lúc này.');
     });
   }
+
+  private showErrorMessage(title: string, message: string): void {
+  this.dialog.open(MessageDialog, {
+    data: {
+      title: title,
+      message: message
+    }
+  });
+}
 }

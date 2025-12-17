@@ -23,6 +23,7 @@ import { Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FilterDialog, FilterDialogData } from '../../dialogs/filter-dialog/filter-dialog';
 import { MatMenuModule } from '@angular/material/menu';
+import { DateTimeUtils } from '../../../utilities/date-time-utils';
 
 interface SortOption {
   value: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'recent';
@@ -104,8 +105,8 @@ export class ProductList {
             case 'name_desc':
                 return b.name.localeCompare(a.name);
             case 'recent':
-                const dateA = this.getTimestampValue(a.updateDate || a.insertDate);
-                const dateB = this.getTimestampValue(b.updateDate || b.insertDate);
+                const dateA = DateTimeUtils.getTimestampValue(a.updateDate || a.insertDate);
+                const dateB = DateTimeUtils.getTimestampValue(b.updateDate || b.insertDate);
                 return dateB - dateA || a.name.localeCompare(b.name);
             default:
                 return 0;

@@ -1,37 +1,66 @@
 <div class="details-container">
-  <button mat-button color="primary" (click)="goBack()">
+  <button mat-button color="primary" (click)="goBack()" class="back-button">
     <mat-icon>arrow_back</mat-icon> Quay lại danh sách sản phẩm
   </button>
 
   @if (product$ | async; as product) {
     <mat-card *ngIf="product" class="product-card">
-      <div class="row">
-        <!-- Image Gallery (Left Column) -->
-        <div class="col-md-6 image-gallery">
-          <img [src]="mainImage() || product.mainImageUrl" alt="{{ product.name }}" class="main-image">
+      <div class="row card-content-wrapper">
+        
+        <!-- Cột trái: Gallery hình ảnh -->
+        <div class="col-md-6 image-gallery-section">
+          <div class="main-image-container">
+            <!-- Nút điều hướng trái -->
+            <button mat-icon-button class="nav-arrow prev" 
+                    (click)="prevImage(product.imageUrls)" 
+                    *ngIf="product.imageUrls.length > 1">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <img [src]="mainImage() || product.mainImageUrl" 
+                 alt="{{ product.name }}" 
+                 class="main-image-display">
+
+            <!-- Nút điều hướng phải -->
+            <button mat-icon-button class="nav-arrow next" 
+                    (click)="nextImage(product.imageUrls)" 
+                    *ngIf="product.imageUrls.length > 1">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
           
           <div class="thumbnail-wrapper">
             @for (imageUrl of product.imageUrls; track imageUrl) {
               <img 
                 [src]="imageUrl" 
                 (click)="setMainImage(imageUrl)"
-                [class.active]="mainImage() === imageUrl"
-                class="thumbnail"
-                alt="Thumbnail of {{ product.name }}"
+                [class.active]="(mainImage() || product.mainImageUrl) === imageUrl"
+                class="thumbnail-item"
+                alt="Thumbnail"
               />
             }
           </div>
         </div>
 
-        <!-- Product Details (Right Column) -->
-        <div class="col-md-6 details-content">
-          <h1 class="product-name">{{ product.name }}</h1>
-          <p class="product-price">{{ product.price | currency:'VND':'symbol':'1.0-0' }}</p>
-          
-          <h2 *ngIf="product.description">Mô tả sản phẩm:</h2>
-          <p class="product-description">{{ product.description }}</p>
+        <!-- Cột phải: Thông tin chi tiết -->
+        <div class="col-md-6 details-info-section">
+          <div class="info-header">
+            <h1 class="product-title">{{ product.name }}</h1>
+            <p class="product-price-tag">{{ product.price | currency:'VND':'symbol':'1.0-0' }}</p>
+          </div>
+
+          <mat-divider *ngIf="product.description"></mat-divider>
+
+          <div class="description-container">
+            <p class="product-description-text">{{ product.description }}</p>
+          </div>
         </div>
+
       </div>
     </mat-card>
+  } @else {
+    <div class="loading-state-container">
+      <mat-spinner></mat-spinner>
+    </div>
   }
 </div>
