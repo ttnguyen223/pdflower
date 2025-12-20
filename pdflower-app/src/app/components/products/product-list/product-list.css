@@ -1,181 +1,215 @@
-/* Base styles (Desktop-first approach) */
+/* --- 1. LAYOUT HEADER --- */
+.product-list-wrapper {
+    padding: 20px 15px;
+    position: relative; /* Cần thiết để spinner căn giữa theo wrapper này */
+    min-height: 400px;  /* Tránh bị nhảy giao diện khi đang load */
+}
+
 .filter-sort-header {
-  display: flex;
-  justify-content: space-between; 
-  align-items: center; 
-  margin-bottom: 10px; 
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
-}
-
-/* Container for the chips, spans full width on desktop (left-aligned by default) */
-.selected-filters-container {
-    margin-bottom: 20px;
     display: flex;
-    flex-wrap: wrap; 
-    gap: 8px;
-    padding: 0 0 10px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.clear-all-filters-btn {
-    font-size: 14px;
-    line-height: 32px; 
-    height: 32px;
-    padding: 0 8px;
-}
-
-/* --- Mobile-specific styles using a Media Query (e.g., screen width < 768px) --- */
-@media (max-width: 767px) {
-  .filter-sort-header {
-    /* REMOVED: flex-direction: column; from original code to keep items inline */
-    align-items: center; /* Ensure they remain centered vertically even in mobile view */
-    gap: 10px; 
-  }
-
-  .selected-filters-container {
-    justify-content: center; 
-    padding-left: 0;
-    padding-right: 0;
-    text-align: center;
-  }
-  
-  .selected-filters-container mat-chip-listbox {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-  }
-
-  .right-controls-wrapper {
-      /* Removed 'width: 100%' from original code */
-      justify-content: flex-end; 
-  }
-  
-  /* Ensure the filter button doesn't take full width in mobile */
-  .text-filter-btn {
-      width: auto;
-      flex-grow: 0;
-  }
-
-  .as-outlined-input {
-      /* width is now automatic based on content + padding */
-      min-width: unset; /* Revert minimum width constraint */
-      flex-grow: 0; /* Prevents it from growing to fill space */
-      white-space: nowrap; 
-  }
-
-  /* Specific width control for the sort input in mobile view */
-  .sort-control .mat-mdc-form-field {
-      width: 130px; /* Adjust width to fit nicely on narrow screens */
-      min-width: unset; 
-  }
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 15px; 
+    padding: 10px 0;
+    border-bottom: 2px solid #eee;
 }
 
 .right-controls-wrapper { 
     display: flex;
     align-items: center; 
-    gap: 16px; 
 }
 
-/* --- Start of Styles to align button and select box --- */
-
-.sort-form-field,
-.as-form-field-control {
-    height: 56px; 
-    box-sizing: border-box; 
+/* --- 2. STYLE ĐỒNG NHẤT VỚI ADMIN-ADD-BTN (CHO FILTER & SORT) --- */
+.as-form-field-control,
+::ng-deep .sort-form-field .mat-mdc-text-field-wrapper {
+    height: 50px !important;
+    max-height: 50px !important;
+    box-sizing: border-box;
+    border-radius: 0 !important; 
+    background-color: lightgoldenrodyellow !important; 
 }
 
 .as-form-field-control {
-    min-height: 56px; 
-    line-height: 56px; 
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 0 16px; 
-    border-radius: 4px; 
-    box-shadow: none;
-    border: 1px solid rgba(0, 0, 0, 0.38); 
-    color: rgba(0, 0, 0, 0.87) !important; 
-    background-color: #fff;
-    font-weight: normal !important; 
+    border: 1px solid #333 !important; 
+    color: #333 !important; 
+    font-weight: 700 !important; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: normal;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-/* Add the hover effect for the filter button */
+mat-select {
+  --mat-select-enabled-arrow-color: rgb(141, 131, 18);
+  --mat-select-focused-arrow-color: rgb(141, 131, 18);
+  --mat-select-hover-arrow-color: rgb(141, 131, 18);
+}
+
 .as-outlined-input:hover {
-    background-color: palegoldenrod !important; 
+    background-color: rgb(141, 131, 18) !important; 
     cursor: pointer;
 }
 
-/* Target the specific form field used for sorting to adjust width */
+/* --- 3. CĂN CHỈNH CHI TIẾT Ô SORT (ANGULAR MATERIAL) --- */
 .sort-control .mat-mdc-form-field {
-    width: 145px;
-    min-width: 150px; 
-    margin-bottom: 0 !important; 
-}
-
-/* --- NEW: Hover effect for the sort textbox (mat-form-field) --- */
-/* Target the internal container that holds the background color */
-.sort-form-field .mat-mdc-form-field-flex {
-    transition: background-color 0.2s ease; /* Smooth transition */
-}
-
-.sort-form-field:hover .mat-mdc-form-field-flex {
-    background-color: palegoldenrod !important;
-    cursor: pointer;
-}
-/* --- END NEW STYLES --- */
-
-
-/* --- Form Field Specific Overrides (Optional but highly recommended for consistency) --- */
-.mat-form-field-appearance-outline .mat-form-field-wrapper {
-    margin: 0 !important; 
-    padding-bottom: 0 !important;
-}
-
-.mat-form-field-appearance-outline .mat-form-field-flex {
-    height: 100%; 
+    width: 170px;
+    display: flex;
     align-items: center;
 }
 
-/* --- Rest of the existing CSS follows (general styling) --- */
-.small-icon-btn {
-  width: 36px; 
-  height: 36px; 
-}
-/* ... rest of your CSS for cards ... */
-.small-icon-btn .mat-icon {
-    font-size: 18px; 
-    width: 18px;
-    height: 18px;
-    line-height: 18px;
+::ng-deep .sort-form-field .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
 }
 
-.icon-only-filter-btn {
-  flex-shrink: 0;
+::ng-deep .sort-form-field .mdc-notched-outline__leading,
+::ng-deep .sort-form-field .mdc-notched-outline__notch,
+::ng-deep .sort-form-field .mdc-notched-outline__trailing {
+    border-color: #333 !important;
+    border-width: 1px !important;
+    border-radius: 0 !important; 
+}
+
+::ng-deep .sort-form-field .mat-mdc-form-field-flex {
+    align-items: center !important;
+    height: 100% !important;
+}
+
+::ng-deep .sort-form-field .mat-mdc-form-field-infix {
+    padding: 0 8px !important;
+    display: flex;
+    align-items: center;
+    min-height: unset !important;
+}
+
+::ng-deep .sort-form-field .mat-mdc-select-value {
+    font-weight: 400 !important; 
+    text-transform: uppercase;   
+    font-size: 13px;
+    color: #333 !important;
+}
+
+/* --- 4. RESPONSIVE CHO MOBILE (768px) --- */
+@media (max-width: 768px) {
+    .as-form-field-control,
+    ::ng-deep .sort-form-field .mat-mdc-text-field-wrapper {
+        height: 44px !important;
+        max-height: 44px !important;
+    }
+    .sort-control .mat-mdc-form-field {
+        width: 160px; 
+    }
+    .as-form-field-control {
+        font-size: 11px;
+        padding: 0 8px;
+    }
+    .filter-sort-header {
+        padding: 5px 0;
+        gap: 5px;
+    }
+    .page-num-btn {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        font-size: 12px;
+    }
+}
+
+/* --- 5. GRID SẢN PHẨM & CARDS --- */
+.product-image-container {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: #f9f9f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 10px;
+}
+
+.product-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.product-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-clamp: 2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 2.8em;
+    color: #333;
+}
+
+/* --- 6. PHÂN TRANG --- */
+.pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0;
+    background-color: white;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.total-count-footer {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 4px;
+    font-style: italic;
+}
+
+.total-count-footer strong {
+    color: rgb(141, 131, 18); 
+}
+
+.page-numbers-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 8px 16px;
+}
+
+.page-num-btn {
+    box-shadow: none !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    color: black !important;
+    background-color: transparent !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    border-radius: 4px;
+}
+
+.page-num-btn.active-page {
+    background-color: rgb(141, 131, 18) !important;
+    color: white !important;
+    border-color: rgb(141, 131, 18) !important;
 }
 
 .loading-state-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px; 
-  margin-top: 50px;
+    display: flex;
+    justify-content: center; /* Horizontal centering */
+    align-items: center;     /* Vertical centering */
+    min-height: 400px;       /* Keeps the layout from collapsing while loading */
+    width: 100%;
 }
 
-.card-img-top {
-    object-fit: contain !important; 
-    object-position: center !important; 
-    height: 250px; 
-    width: 100%; 
-    background-color: #ffffff; 
-}
-
-.card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.add-to-cart-btn mat-icon {
-    color: #AA9860;
-    transition: color 0.3s ease;
-}
-
-.add-to-cart-btn:hover mat-icon {
-    color: #C6B06A;
+/* Ẩn mặc định paginator */
+::ng-deep .mat-mdc-paginator-page-size,
+::ng-deep .mat-mdc-paginator-range-label {
+    display: none !important;
 }

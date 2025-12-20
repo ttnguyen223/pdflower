@@ -2,8 +2,7 @@
 
   <!-- Desktop View Filter/Sort Bar -->
   <div class="filter-sort-header">
-    
-    <!-- LEFT SIDE: Filter Button (NEW LOCATION) -->
+    <!-- LEFT SIDE: Filter Button -->
     <button 
       mat-button 
       class="text-filter-btn as-form-field-control as-outlined-input" 
@@ -12,12 +11,12 @@
         Sản Phẩm Hoa Tươi
     </button>
     
-    <!-- RIGHT SIDE: Sort Dropdown (NEW WRAPPER) -->
+    <!-- RIGHT SIDE: Sort Dropdown -->
     <div class="right-controls-wrapper"> 
-        <!-- Sort Control -->
         <div class="sort-control">
             <mat-form-field appearance="outline" class="sort-form-field small-sort-field">
-                <mat-select [(ngModel)]="sortOption" disableRipple>
+                <!-- Truyền $event để tránh lỗi TS2554 nếu hàm yêu cầu tham số -->
+                <mat-select [(ngModel)]="sortOption" (selectionChange)="onSortChange($event)" disableRipple>
                     @for (option of sortOptions; track option.value) {
                         <mat-option [value]="option.value">{{ option.label }}</mat-option>
                     }
@@ -27,14 +26,14 @@
     </div>
   </div>
 
-  <!-- Selected Filters Display (Now below the main header, spanning full width) -->
+  <!-- Selected Filters Display -->
   @if (selectedCategories().length > 0) {
     <div class="selected-filters-container">
         <mat-chip-listbox aria-label="Selected filters">
             @for (filter of selectedCategories(); track filter) {
                 <mat-chip color="accent" selected>
                     {{ filter }}
-                    <button matChipRemove [attr.aria-label]="'Remove filter ' + filter" (click)="removeFilter(filter)">
+                    <button matChipRemove (click)="removeFilter(filter)">
                         <mat-icon>cancel</mat-icon>
                     </button>
                 </mat-chip>
@@ -43,38 +42,42 @@
     </div>
   }
 
-  <!-- Conditional Rendering Block for Products or Loader (rest of HTML remains the same) -->
+  <!-- Main Content Area -->
   @if (loading()) {
-      <!-- Show spinner while loading is true -->
       <div class="loading-state-container">
           <mat-spinner diameter="50"></mat-spinner>
       </div>
   } @else {
-    <!-- Show product list once loading is false -->
-    <div class="row g-4">
-      @for (item of filteredProducts(); track item.id) {
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <!-- Added (click) handler to navigate -->
-        <div class="card h-100 shadow-sm border-0" (click)="goToProductDetails(item)">
-          <img
-            [src]="item.mainImageUrl"
-            class="card-img-top object-fit-contain"
-            alt="{{ item.name }}"
-            title="{{ item.description }}"
-          />
+    <!-- Grid System: col-6 (Mobile = 2 items), col-md-4 (Tablet), col-lg-3 (Desktop) -->
+    <div class="row g-2 g-md-4">
+      @for (item of paginatedProducts(); track item.id) {
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="card h-100 shadow-sm border-0 product-card" (click)="goToProductDetails(item)">
+          
+          <!-- Image Wrapper to maintain 1:1 Aspect Ratio -->
+          <div class="product-image-container">
+            <img
+              [src]="item.mainImageUrl"
+              class="card-img-top"
+              alt="{{ item.name }}"
+              loading="lazy"
+            />
+          </div>
 
-          <div class="card-body text-center p-3">
-            <h5 class="card-title fw-semibold text-dark mb-0">
+          <div class="card-body text-center p-2 p-md-3">
+            <!-- Tiêu đề sản phẩm với line-clamp tối ưu -->
+            <h5 class="product-title fw-semibold text-dark">
               {{ item.name }}
             </h5>
-            <p class="card-text fw-bold text-success mb-0">{{ item.price | number : '1.0-0' }}₫</p>
+            <p class="product-price fw-bold text-success">{{ item.price | number : '1.0-0' }}₫</p>
+            
             @if (showCart) {
             <button
               mat-icon-button
               class="add-to-cart-btn"
               color="primary"
               (click)="$event.stopPropagation(); addToCart(item)" 
-              matTooltip="Add item to cart"
+              matTooltip="Thêm vào giỏ hàng"
               matTooltipPosition="above"
             >
               <mat-icon>add</mat-icon>
@@ -85,9 +88,41 @@
       </div>
       } @empty {
           <div class="col-12">
-            <p class="text-center mt-4">Không tìm thấy sản phẩm nào phù hợp với bộ lọc.</p>
+            <p class="text-center mt-4 text-muted">Không tìm thấy sản phẩm nào phù hợp.</p>
           </div>
       }
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="pagination-container mt-5" *ngIf="filteredProducts().length > 0">
+      
+      <!-- Thông tin số lượng sản phẩm đang hiển thị -->
+      <div class="total-count-footer" *ngIf="!loading()">
+        Đang hiển thị 
+        <strong>{{ pageIndex() * 20 + 1 }}</strong> – 
+        <strong>{{ Math.min((pageIndex() + 1) * 20, filteredProducts().length) }}</strong> 
+        trong tổng số <strong>{{ filteredProducts().length }}</strong> sản phẩm
+      </div>
+
+      <mat-paginator 
+        [length]="filteredProducts().length"
+        [pageSize]="20"
+        [pageIndex]="pageIndex()"
+        hidePageSize
+        showFirstLastButtons
+        (page)="handlePageEvent($event)"
+        aria-label="Chọn trang">
+      </mat-paginator>
+
+      <div class="page-numbers-row">
+        <button mat-mini-fab 
+                *ngFor="let p of [].constructor(Math.ceil(filteredProducts().length / 20)); let i = index"
+                [class.active-page]="pageIndex() === i"
+                class="page-num-btn"
+                (click)="handlePageEvent({pageIndex: i})">
+          {{ i + 1 }}
+        </button>
+      </div>
     </div>
   }
 </div>

@@ -1,17 +1,24 @@
 <mat-toolbar color="primary" class="admin-toolbar">
-    <span>Quản lý sản phẩm</span>
+    <span>Quản Lý Sản Phẩm</span>
     <span class="toolbar-spacer"></span>
-    <button mat-raised-button class="admin-add-btn" (click)="openProductModal()">
-        <mat-icon>add</mat-icon> Sản phẩm mới
+    <button mat-raised-button class="admin-add-btn"
+          matTooltip="Sản phẩm mới"
+          matTooltipPosition="below"
+          (click)="openProductModal()">
+        <mat-icon>add</mat-icon>
+        <span class="add-btn-text">Sản phẩm mới</span>
     </button>
 </mat-toolbar>
 
 <div class="table-container responsive-table mat-elevation-z8">
+  <div class="loading-overlay" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
   <table mat-table [dataSource]="dataSource" matSort>
     
     <!-- Image Preview Column: Clicking header resets sort -->
     <ng-container matColumnDef="imagePreview">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Ảnh </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Mới nhất </th>
       <td mat-cell *matCellDef="let element">
         <img [src]="element.mainImageUrl" alt="{{ element.name }}" class="product-preview-img" />
       </td>
@@ -64,6 +71,12 @@
   </table>
 
   <div class="pagination-container">
+    <div class="total-count-footer" *ngIf="!isLoading && paginator && dataSource.data.length > 0">
+      Đang hiển thị 
+      <strong>{{ paginator.pageIndex * 20 + 1 }}</strong> – 
+      <strong>{{ Math.min((paginator.pageIndex + 1) * 20, dataSource.data.length) }}</strong> 
+      trong tổng số <strong>{{ dataSource.data.length }}</strong> sản phẩm
+    </div>
     <!-- Material paginator handles the logic and arrow buttons -->
     <mat-paginator [pageSize]="20" hidePageSize showFirstLastButtons></mat-paginator>
     

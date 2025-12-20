@@ -1,14 +1,13 @@
-import { Component, signal, input, computed, inject, OnInit } from '@angular/core';
+import { Component, signal, input, computed, inject } from '@angular/core';
 import { Product } from '../../../models/product.model';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CartService } from '../../../services/cart.service';
-import { ActivatedRoute } from '@angular/router';
-import { serverTimestamp, Timestamp } from '@angular/fire/firestore';
+import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ProductService } from '../../../services/product.service';
-import { startWith, tap } from 'rxjs/operators';
+import { startWith, tap, map } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core'; 
@@ -18,12 +17,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators'
-import { Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FilterDialog, FilterDialogData } from '../../dialogs/filter-dialog/filter-dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { DateTimeUtils } from '../../../utilities/date-time-utils';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 interface SortOption {
   value: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'recent';
@@ -33,9 +31,20 @@ interface SortOption {
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatOptionModule,
-    MatCardModule, MatFormFieldModule, MatSelectModule, MatTooltipModule, FormsModule,
-    MatChipsModule, MatProgressSpinnerModule, MatMenuModule
+  imports: [
+    CommonModule, 
+    MatButtonModule, 
+    MatIconModule, 
+    MatOptionModule,
+    MatCardModule, 
+    MatFormFieldModule, 
+    MatSelectModule, 
+    MatTooltipModule, 
+    FormsModule,
+    MatChipsModule, 
+    MatProgressSpinnerModule, 
+    MatMenuModule, 
+    MatPaginatorModule
   ],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
@@ -46,8 +55,15 @@ export class ProductList {
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   private router = inject(Router);
-  public showCart = false;
+  protected readonly Math = Math;
+  
+  public showCart = false; // Thuộc tính điều khiển việc hiển thị nút giỏ hàng
 
+  // --- Pagination Signals ---
+  pageIndex = signal(0);
+  pageSize = 20;
+
+  // --- Product Data Signals ---
   category = input<string>();
   loading = signal(true);
 
@@ -58,12 +74,13 @@ export class ProductList {
     )
   );
 
+  // --- Filter & Sort Signals ---
   public allCategories$: Observable<string[]> = this.productService.getCategories().pipe(
     map((categories: any[]) => categories.map(c => c.name))
   );
   public allCategoryNames = toSignal(this.allCategories$, { initialValue: [] });
   public selectedCategories = signal<string[]>([]);
-  public sortOption = signal<SortOption['value']>('recent'); // Default sort: Most Recent
+  public sortOption = signal<SortOption['value']>('recent');
 
   public sortOptions: SortOption[] = [
     { value: 'recent', label: 'Mới nhất' },
@@ -73,34 +90,27 @@ export class ProductList {
     { value: 'name_desc', label: 'Tên: Z - A' },
   ];
 
-    currentCategory = computed(() => {
-    if (this.category()) {
-      return this.category()!;
-    }
-    return this.route.snapshot.data['defaultCategory'] || 'all';
-  });
-
+  // Logic lọc và sắp xếp chính
   filteredProducts = computed(() => {
     const allProducts = this.productList() ?? [];
     let result = allProducts.filter(p => p.isActive === true);
     const filters = this.selectedCategories();
     const sort = this.sortOption();
 
-    // 1. Filter by categories (if any selected)
+    // 1. Lọc theo danh mục
     if (filters.length > 0) {
         result = result.filter(p => 
             p.categories.some(productCategory => filters.includes(productCategory))
         );
     } 
-    // Note: The previous logic of routing to a single category input is replaced by the multi-select filter above.
 
-    // 2. Sort the results
+    // 2. Sắp xếp kết quả
     return result.sort((a, b) => {
         switch (sort) {
             case 'price_asc':
-                return a.price - b.price || a.name.localeCompare(b.name); // Tie-breaker by name
+                return a.price - b.price || a.name.localeCompare(b.name);
             case 'price_desc':
-                return b.price - a.price || a.name.localeCompare(b.name); // Tie-breaker by name
+                return b.price - a.price || a.name.localeCompare(b.name);
             case 'name_asc':
                 return a.name.localeCompare(b.name);
             case 'name_desc':
@@ -115,18 +125,14 @@ export class ProductList {
     });
   });
 
-  private getTimestampValue(dateField: any): number {
-    if (dateField instanceof Date) {
-      return dateField.getTime();
-    }
-    // Assumes Firestore returns an object with seconds and nanoseconds if not a JS Date
-    if (dateField && typeof dateField === 'object' && 'seconds' in dateField) {
-      return dateField.seconds * 1000; // Convert seconds to milliseconds
-    }
-    // Fallback if the format is unexpected
-    return new Date(dateField).getTime(); 
-  }
-  
+  // Signal cuối cùng để hiển thị trên UI (đã phân trang)
+  paginatedProducts = computed(() => {
+    const start = this.pageIndex() * this.pageSize;
+    return this.filteredProducts().slice(start, start + this.pageSize);
+  });
+
+  // --- Methods ---
+
   openFilterDialog(): void {
     const dialogData: FilterDialogData = {
       allCategories: this.allCategoryNames(),
@@ -140,29 +146,35 @@ export class ProductList {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) this.selectedCategories.set(result);
+      if (result !== undefined) {
+        this.selectedCategories.set(result);
+        this.pageIndex.set(0); // Reset về trang đầu khi đổi bộ lọc
+      }
     });
   }
 
   removeFilter(category: string): void {
     this.selectedCategories.update(filters => filters.filter(f => f !== category));
+    this.pageIndex.set(0); // Reset về trang đầu khi bỏ bộ lọc
+  }
+
+  onSortChange(event: any): void {
+    // Lấy giá trị từ MatSelectChange event
+    this.sortOption.set(event.value);
+    this.pageIndex.set(0); // Reset về trang đầu khi đổi cách sắp xếp
+  }
+
+  handlePageEvent(event: any): void {
+    this.pageIndex.set(event.pageIndex);
+    // Cuộn mượt lên đầu danh sách sản phẩm
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   goToProductDetails(product: Product): void {
-    // Navigate to the new route using the product ID
-    console.log("trigger!")
     this.router.navigate(['/products', product.id]); 
   }
 
-  onCategoryFilterChange(selectedItems: string[]): void {
-    this.selectedCategories.set(selectedItems);
-  }
-
-  onSortChange(selectedSortValue: SortOption['value']): void {
-    this.sortOption.set(selectedSortValue);
-  }
-
-  addToCart(item: Product) {
+  addToCart(item: Product): void {
     this.cartService.addToCart(item);
   }
 }

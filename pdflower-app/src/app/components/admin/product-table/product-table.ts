@@ -15,6 +15,7 @@ import { DateTimeUtils } from '../../../utilities/date-time-utils';
 import { ConfirmationDialog } from '../../dialogs/confirmation-dialog/confirmation-dialog';
 import { MessageDialog } from '../../dialogs/message-dialog/message-dialog';
 import { take } from 'rxjs/operators';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-product-table',
@@ -31,6 +32,7 @@ import { take } from 'rxjs/operators';
     MatTooltipModule,
     CurrencyPipe,
     DatePipe,
+    MatProgressSpinnerModule
   ],
   templateUrl: './product-table.html',
   styleUrl: './product-table.css',
@@ -39,6 +41,7 @@ export class ProductTable implements OnInit, AfterViewInit {
   private productService = inject(ProductService);
   private dialog = inject(MatDialog);
   protected readonly Math = Math;
+  isLoading = true; 
 
   displayedColumns: string[] = ['imagePreview', 'name', 'price', 'status', 'actions'];
   
@@ -49,9 +52,16 @@ export class ProductTable implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   ngOnInit(): void {
-    this.productService.getProducts().subscribe((products) => {
-      // Apply initial custom sort before assigning to data source
-      this.dataSource.data = this.sortProducts(products);
+    this.isLoading = true;
+    this.productService.getProducts().subscribe({
+      next: (products) => {
+        this.dataSource.data = this.sortProducts(products);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.isLoading = false;
+      }
     });
   }
 
