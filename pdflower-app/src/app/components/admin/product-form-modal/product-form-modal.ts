@@ -192,26 +192,45 @@ export class ProductFormModal {
   // --- Price Formatting Logic ---
 
   private formatVndPrice(value: number | null | undefined): string {
-    if (value === null || value === undefined || isNaN(value)) return '';
-    return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    }).format(value);
+      const numericValue = (value === null || value === undefined || isNaN(value)) ? 0 : value;
+
+      return new Intl.NumberFormat('vi-VN', {
+          style: 'decimal',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+      }).format(numericValue);
   }
 
-  private parseVndPrice(formattedValue: string): number {
+  private parseVndPrice(formattedValue: string): number | null {
+    if (!formattedValue) return null;
+    
     const numericString = formattedValue.replace(/[^\d]/g, '');
-    return parseInt(numericString, 10) || 0;
+    
+    if (!numericString) return null; 
+    return parseInt(numericString, 10);
   }
 
   onPriceInput(event: Event): void {
-    const inputElement = event.target as HTMLInputElement;
-    const rawValue = inputElement.value;
-    const numericValue = this.parseVndPrice(rawValue);
-    const formattedValue = this.formatVndPrice(numericValue);
-    this.form.controls['price'].setValue(formattedValue, { emitEvent: false });
+      const inputElement = event.target as HTMLInputElement;
+      const rawValue = inputElement.value;
+
+      // numericValue can now be number or null
+      const numericValue = this.parseVndPrice(rawValue);
+
+      // If it's null (deleted), we treat it as 0
+      const finalValue = numericValue === null ? 0 : numericValue;
+
+      // Format the number back into a string with dots (no ₫)
+      const formattedValue = this.formatVndPrice(finalValue);
+      
+      this.form.controls['price'].setValue(formattedValue, { emitEvent: false });
+
+      // If the user deleted the last digit, reset cursor to after the new "0"
+      if (numericValue === null) {
+          setTimeout(() => {
+              inputElement.setSelectionRange(1, 1);
+          }, 0);
+      }
   }
   
   // --- Category Management ---

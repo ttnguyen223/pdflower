@@ -77,6 +77,14 @@
     gap: 8px; /* Space between input fields */
 }
 
+.save-btn[disabled] {
+    background-color: #e0e0e0 !important; 
+    color: #9e9e9e !important;             
+    border: 1px solid #bdbdbd !important;   
+    cursor: not-allowed !important;         
+    box-shadow: none !important;
+}
+
 /* 4. Image Previews & Remove Button */
 .image-previews-container, .local-previews-list {
     display: flex;
@@ -242,6 +250,14 @@
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {
     position: relative !important; /* Forces error space to push content down */
     height: auto !important;
+}
+
+[matSuffix] {
+    margin-right: 8px; /* Moves the symbol away from the right edge */
+    margin-left: 8px;  /* Space between the last digit and the symbol */
+    color: #666;
+    font-weight: 600;
+    user-select: none; /* Prevents user from selecting the symbol text */
 }
 
 .price-quantity-group { 
