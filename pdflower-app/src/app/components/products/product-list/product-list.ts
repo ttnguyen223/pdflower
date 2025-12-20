@@ -61,6 +61,7 @@ export class ProductList {
   public allCategories$: Observable<string[]> = this.productService.getCategories().pipe(
     map((categories: any[]) => categories.map(c => c.name))
   );
+  public allCategoryNames = toSignal(this.allCategories$, { initialValue: [] });
   public selectedCategories = signal<string[]>([]);
   public sortOption = signal<SortOption['value']>('recent'); // Default sort: Most Recent
 
@@ -126,25 +127,20 @@ export class ProductList {
     return new Date(dateField).getTime(); 
   }
   
-    openFilterDialog(): void {
-    this.allCategories$.subscribe(allCategoryNames => {
-      
-      const dialogData: FilterDialogData = {
-        allCategories: allCategoryNames,
-        selectedCategories: this.selectedCategories()
-      };
+  openFilterDialog(): void {
+    const dialogData: FilterDialogData = {
+      allCategories: this.allCategoryNames(),
+      selectedCategories: this.selectedCategories()
+    };
 
-      const dialogRef = this.dialog.open(FilterDialog, {
-        width: '300px', // Standard Material dialog
-        data: dialogData,
-        restoreFocus: false
-      });
+    const dialogRef = this.dialog.open(FilterDialog, {
+      width: '300px',
+      data: dialogData,
+      restoreFocus: false
+    });
 
-      dialogRef.afterClosed().subscribe((result: string[] | undefined) => {
-        if (result !== undefined) {
-          this.selectedCategories.set(result);
-        }
-      });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) this.selectedCategories.set(result);
     });
   }
 

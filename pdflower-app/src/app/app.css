@@ -60,6 +60,11 @@ body, .page-wrapper {
     display: block;
 }
 
+::ng-deep mat-spinner circle, 
+::ng-deep .mat-mdc-progress-spinner circle {
+  stroke: rgb(141, 131, 18) !important;
+}
+
 .loading-overlay {
   position: fixed; /* Fixes it in the viewport */
   top: 0;
@@ -71,6 +76,10 @@ body, .page-wrapper {
   justify-content: center;
   align-items: center;
   z-index: 1000; /* Ensure it's above other content */
+}
+
+.loading-overlay mat-spinner circle {
+  stroke: rgb(141, 131, 18) !important;
 }
 
 .user-email-display {

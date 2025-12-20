@@ -2,6 +2,22 @@
   margin-bottom: 20px;
 }
 
+.admin-add-btn {
+    border-radius: 0 !important;           /* Makes the button square */
+    background-color: palegoldenrod !important; 
+    color: #333 !important;                 /* Dark text color */
+    border: 1px solid #333 !important;      /* Solid dark border */
+    text-transform: uppercase;              /* Uppercase text */
+    font-weight: 700 !important;            /* Bold font weight */
+    box-shadow: none !important;            /* Optional: flattens the button for a cleaner look */
+}
+
+/* Optional: Add a hover effect for better UX */
+.admin-add-btn:hover {
+    background-color: #eee48b !important; /* Slightly darker gold on hover */
+}
+
+/* Add spacing for the spacer in the toolbar if you haven't yet */
 .toolbar-spacer {
     flex: 1 1 auto;
 }
@@ -90,4 +106,61 @@ table {
       padding-top: 10px;
       border-top: 1px solid #eee; /* Separator line for actions */
   }
+
+  .page-numbers-row {
+    gap: 4px;
+  }
+  .page-num-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    font-size: 12px;
+  }
+}
+
+.pagination-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  background-color: white;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* Row of page numbers */
+.page-numbers-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap; /* Allows numbers to wrap to next line on mobile */
+  justify-content: center;
+  padding: 8px 16px;
+  max-width: 100%;
+}
+
+/* Base style for all page number buttons */
+.page-num-btn {
+  box-shadow: none !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  color: black !important; /* Non-selected numbers are black */
+  background-color: transparent !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Style for the current selected page */
+.page-num-btn.active-page {
+  background-color: rgb(141, 131, 18) !important; /* Your specific color */
+  color: white !important; /* White text for contrast on the dark olive/gold */
+  border-color: rgb(141, 131, 18) !important;
+}
+
+::ng-deep .mat-mdc-paginator-page-size,
+::ng-deep .mat-mdc-paginator-range-label {
+  display: none !important;
+}
+
+::ng-deep .mat-mdc-paginator-container {
+  justify-content: center !important;
+  min-height: 40px !important;
 }

@@ -1,18 +1,17 @@
-<mat-toolbar color="primary" class="admin-toolbar"> <!-- Added class "admin-toolbar" -->
+<mat-toolbar color="primary" class="admin-toolbar">
     <span>Quản lý sản phẩm</span>
     <span class="toolbar-spacer"></span>
-    <button mat-raised-button color="accent" (click)="openProductModal()">
+    <button mat-raised-button class="admin-add-btn" (click)="openProductModal()">
         <mat-icon>add</mat-icon> Sản phẩm mới
     </button>
 </mat-toolbar>
 
-<div class="table-container responsive-table"> <!-- Added class "responsive-table" -->
-  <table mat-table [dataSource]="(products$ | async) ?? []" class="mat-elevation-z8">
-    <!-- ... all your ng-container definitions remain the same ... -->
+<div class="table-container responsive-table mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource" matSort>
     
-    <!-- Image Preview Column -->
+    <!-- Image Preview Column: Clicking header resets sort -->
     <ng-container matColumnDef="imagePreview">
-      <th mat-header-cell *matHeaderCellDef> Ảnh </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Ảnh </th>
       <td mat-cell *matCellDef="let element">
         <img [src]="element.mainImageUrl" alt="{{ element.name }}" class="product-preview-img" />
       </td>
@@ -20,19 +19,19 @@
 
     <!-- Name Column -->
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Tên sản phẩm </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Tên sản phẩm </th>
       <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
     </ng-container>
 
     <!-- Price Column -->
     <ng-container matColumnDef="price">
-      <th mat-header-cell *matHeaderCellDef> Giá </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Giá </th>
       <td mat-cell *matCellDef="let element"> {{ element.price | currency:'VND':'symbol':'1.0-0' }} </td>
     </ng-container>
     
-    <!-- Status (Visibility) Column -->
+    <!-- Status Column -->
     <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef> Trạng thái </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Trạng thái </th>
       <td mat-cell *matCellDef="let element"> 
         <mat-icon [color]="element.isActive ? 'primary' : 'warn'"
                   [matTooltip]="element.isActive ? 'Hiển thị' : 'Ẩn'">
@@ -41,24 +40,19 @@
       </td>
     </ng-container>
 
-
-    <!-- Actions Column -->
+    <!-- Actions Column (Not Sortable) -->
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef> Hành động </th>
       <td mat-cell *matCellDef="let element">
-        
-        <!-- Toggle Visibility Button -->
         <button mat-icon-button (click)="toggleActiveStatus(element)" 
                 [matTooltip]="element.isActive ? 'Ẩn sản phẩm' : 'Hiển thị sản phẩm'">
           <mat-icon color="primary">{{ element.isActive ? 'toggle_on' : 'toggle_off' }}</mat-icon>
         </button>
         
-        <!-- Edit Button -->
         <button mat-icon-button color="accent" (click)="openProductModal(element)" matTooltip="Chỉnh sửa">
           <mat-icon>edit</mat-icon>
         </button>
 
-        <!-- Delete Button -->
         <button mat-icon-button color="warn" (click)="deleteProduct(element.id)" matTooltip="Xóa">
           <mat-icon>delete</mat-icon>
         </button>
@@ -68,4 +62,20 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
+
+  <div class="pagination-container">
+    <!-- Material paginator handles the logic and arrow buttons -->
+    <mat-paginator [pageSize]="20" hidePageSize showFirstLastButtons></mat-paginator>
+    
+    <!-- Custom numbered buttons -->
+    <div class="page-numbers-row" *ngIf="paginator">
+      <button mat-mini-fab 
+              *ngFor="let p of [].constructor(Math.ceil(dataSource.data.length / 20)); let i = index"
+              [class.active-page]="paginator.pageIndex === i"
+              class="page-num-btn"
+              (click)="goToPage(i)">
+        {{ i + 1 }}
+      </button>
+    </div>
+  </div>
 </div>

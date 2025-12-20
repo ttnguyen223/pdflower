@@ -43,12 +43,18 @@
   <!-- Check user status using async pipe -->
   @if (user$ | async; as user) {
     <!-- Option for logged-in users -->
-     @if (isAdmin$ | async) {
-      <!-- This button is only rendered if isAdmin$ emits 'true' -->
-      <button mat-menu-item routerLink="/admin">
-        <mat-icon>dashboard</mat-icon>
-        <span>Quản lý sản phẩm</span>
-      </button>
+    @if (isAdmin$ | async; as isAdmin) {
+      @if (isAdmin) {
+        <button mat-menu-item routerLink="/admin">
+          <mat-icon>dashboard</mat-icon>
+          <span>Quản lý sản phẩm</span>
+        </button>
+      }
+    } @else {
+      <!-- Display a small spinner while isAdmin$ is resolving -->
+      <div style="display: flex; justify-content: center; padding: 12px;">
+        <mat-spinner diameter="24"></mat-spinner>
+      </div>
     }
     <button mat-menu-item (click)="onLogout()">
       <mat-icon>logout</mat-icon>
