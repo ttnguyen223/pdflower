@@ -384,7 +384,8 @@
 
 .loading-state-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 400px;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    min-height: 400px;       /* Increased to match the product-list feel */
+    width: 100%;
 }

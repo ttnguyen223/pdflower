@@ -1,4 +1,4 @@
-import { Component, signal, input, computed, inject } from '@angular/core';
+import { Component, signal, input, computed, inject, effect } from '@angular/core';
 import { Product } from '../../../models/product.model';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,6 +22,7 @@ import { FilterDialog, FilterDialogData } from '../../dialogs/filter-dialog/filt
 import { MatMenuModule } from '@angular/material/menu';
 import { DateTimeUtils } from '../../../utilities/date-time-utils';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { ProductListStateService } from '../../../services/product-list-state.service';
 
 interface SortOption {
   value: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'recent';
@@ -55,12 +56,17 @@ export class ProductList {
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   private router = inject(Router);
-  protected readonly Math = Math;
+  private stateService = inject(ProductListStateService);
   
-  public showCart = false; // Thuộc tính điều khiển việc hiển thị nút giỏ hàng
+  protected readonly Math = Math;
+  public showCart = false; 
 
-  // --- Pagination Signals ---
-  pageIndex = signal(0);
+  // --- State Persistence ---
+  // We point these directly to the service's signals so they persist across navigation
+  pageIndex = this.stateService.pageIndex;
+  selectedCategories = this.stateService.selectedCategories;
+  sortOption = this.stateService.sortOption;
+  
   pageSize = 20;
 
   // --- Product Data Signals ---
@@ -69,18 +75,20 @@ export class ProductList {
 
   productList = toSignal<Product[]>(
     this.productService.getProducts().pipe(
-      tap(() => this.loading.set(false)),
+      tap(() => {
+        this.loading.set(false);
+        // After data loads, restore the scroll position
+        this.restoreScroll();
+      }),
       startWith([])
     )
   );
 
-  // --- Filter & Sort Signals ---
+  // --- Filter & Sort Options ---
   public allCategories$: Observable<string[]> = this.productService.getCategories().pipe(
     map((categories: any[]) => categories.map(c => c.name))
   );
   public allCategoryNames = toSignal(this.allCategories$, { initialValue: [] });
-  public selectedCategories = signal<string[]>([]);
-  public sortOption = signal<SortOption['value']>('recent');
 
   public sortOptions: SortOption[] = [
     { value: 'recent', label: 'Mới nhất' },
@@ -90,6 +98,13 @@ export class ProductList {
     { value: 'name_desc', label: 'Tên: Z - A' },
   ];
 
+  constructor() {
+    // Optional: Log state for debugging
+    effect(() => {
+      console.log('Current Page:', this.pageIndex());
+    });
+  }
+
   // Logic lọc và sắp xếp chính
   filteredProducts = computed(() => {
     const allProducts = this.productList() ?? [];
@@ -97,14 +112,12 @@ export class ProductList {
     const filters = this.selectedCategories();
     const sort = this.sortOption();
 
-    // 1. Lọc theo danh mục
     if (filters.length > 0) {
         result = result.filter(p => 
             p.categories.some(productCategory => filters.includes(productCategory))
         );
     } 
 
-    // 2. Sắp xếp kết quả
     return result.sort((a, b) => {
         switch (sort) {
             case 'price_asc':
@@ -125,7 +138,6 @@ export class ProductList {
     });
   });
 
-  // Signal cuối cùng để hiển thị trên UI (đã phân trang)
   paginatedProducts = computed(() => {
     const start = this.pageIndex() * this.pageSize;
     return this.filteredProducts().slice(start, start + this.pageSize);
@@ -133,10 +145,32 @@ export class ProductList {
 
   // --- Methods ---
 
+  private restoreScroll(): void {
+    // Delay slightly to ensure the DOM has rendered the paginated products
+    setTimeout(() => {
+      window.scrollTo({
+        top: this.stateService.scrollPosition,
+        behavior: 'instant'
+      });
+    }, 50);
+  }
+
   openFilterDialog(): void {
+    const counts: Record<string, number> = {};
+    const allItems = this.productList() ?? [];
+
+    allItems.forEach(product => {
+      if (product.isActive && product.categories) {
+        product.categories.forEach(catName => {
+          counts[catName] = (counts[catName] || 0) + 1;
+        });
+      }
+    });
+
     const dialogData: FilterDialogData = {
       allCategories: this.allCategoryNames(),
-      selectedCategories: this.selectedCategories()
+      selectedCategories: this.selectedCategories(),
+      categoryCounts: counts
     };
 
     const dialogRef = this.dialog.open(FilterDialog, {
@@ -148,29 +182,33 @@ export class ProductList {
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
         this.selectedCategories.set(result);
-        this.pageIndex.set(0); // Reset về trang đầu khi đổi bộ lọc
+        this.pageIndex.set(0); 
+        this.stateService.scrollPosition = 0; // Reset scroll when filter changes
       }
     });
   }
 
   removeFilter(category: string): void {
     this.selectedCategories.update(filters => filters.filter(f => f !== category));
-    this.pageIndex.set(0); // Reset về trang đầu khi bỏ bộ lọc
+    this.pageIndex.set(0); 
+    this.stateService.scrollPosition = 0;
   }
 
   onSortChange(event: any): void {
-    // Lấy giá trị từ MatSelectChange event
     this.sortOption.set(event.value);
-    this.pageIndex.set(0); // Reset về trang đầu khi đổi cách sắp xếp
+    this.pageIndex.set(0); 
+    this.stateService.scrollPosition = 0;
   }
 
   handlePageEvent(event: any): void {
     this.pageIndex.set(event.pageIndex);
-    // Cuộn mượt lên đầu danh sách sản phẩm
+    this.stateService.scrollPosition = 0;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   goToProductDetails(product: Product): void {
+    // Save current scroll position to the service before navigating
+    this.stateService.scrollPosition = window.scrollY;
     this.router.navigate(['/products', product.id]); 
   }
 

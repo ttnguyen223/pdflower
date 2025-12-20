@@ -6,10 +6,11 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 
-// Interface defining the shape of data passed into and out of the dialog
+// Updated interface to include categoryCounts
 export interface FilterDialogData {
   allCategories: string[];
   selectedCategories: string[];
+  categoryCounts: Record<string, number>; // Maps category name to product count
 }
 
 @Component({
@@ -39,12 +40,12 @@ export class FilterDialog {
   }
 
   onCancel(): void {
-    // Close the dialog without passing back any data (undefined or null)
+    // Close the dialog without passing back any data
     this.dialogRef.close();
   }
 
   onApply(): void {
-    // Close the dialog and pass the locally selected categories back to the parent component
+    // Close the dialog and pass the locally selected categories back
     this.dialogRef.close(this.localSelectedCategories());
   }
 
@@ -54,7 +55,7 @@ export class FilterDialog {
   }
 
   toggleSelection(category: string, event: MatCheckboxChange): void {
-    const isChecked = event.checked; // Access 'checked' directly from the event object
+    const isChecked = event.checked; 
     this.localSelectedCategories.update(currentFilters => {
       if (isChecked) {
         if (!currentFilters.includes(category)) {

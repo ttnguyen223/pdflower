@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-product-details-page',
@@ -29,6 +30,7 @@ export class ProductDetailsPage implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private productService = inject(ProductService);
+  private location = inject(Location);
 
   product$: Observable<Product | undefined> | undefined;
   mainImage = signal<string | undefined>(undefined);
@@ -56,7 +58,7 @@ export class ProductDetailsPage implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/products']); // Navigate back to the product list route
+    this.location.back();
   }
 
   setMainImage(imageUrl: string): void {

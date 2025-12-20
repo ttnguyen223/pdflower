@@ -1,5 +1,5 @@
   import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
-  import { provideRouter, withComponentInputBinding } from '@angular/router';
+  import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
   import { provideHttpClient } from '@angular/common/http';
 
   import { routes } from './app.routes';
@@ -13,7 +13,10 @@
     providers: [
       provideBrowserGlobalErrorListeners(),
       provideZoneChangeDetection({ eventCoalescing: true }),
-      provideRouter(routes, withComponentInputBinding()), 
+      provideRouter(routes, withComponentInputBinding(), withInMemoryScrolling({
+        scrollPositionRestoration: 'enabled', 
+        anchorScrolling: 'enabled'
+      })), 
       provideFirebaseApp(() => initializeApp(environment.firebase)),
       provideFirestore(() => getFirestore()),
       provideAuth(() => getAuth()),

@@ -86,6 +86,12 @@
     height: 20px;
 }
 
+.category-count {
+  font-size: 0.85em;
+  color: #757575; /* Subtle grey color */
+  margin-left: 4px;
+}
+
 /* Checkbox specific styling */
 ::ng-deep .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
     background-color: palegoldenrod !important;

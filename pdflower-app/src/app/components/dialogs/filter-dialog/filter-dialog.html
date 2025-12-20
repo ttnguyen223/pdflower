@@ -5,6 +5,7 @@
     <mat-icon class="close-icon">close</mat-icon>
   </button>
 </div>
+
 <mat-dialog-content class="dialog-content-wrapper">
   @for (category of data.allCategories; track category) {
     <mat-checkbox 
@@ -12,7 +13,8 @@
       (change)="toggleSelection(category, $event)"
       color="primary"
     >
-      {{ category }}
+      {{ category }} 
+      <span class="category-count">({{ data.categoryCounts[category] || 0 }})</span>
     </mat-checkbox>
   }
 </mat-dialog-content>
