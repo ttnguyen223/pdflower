@@ -1,8 +1,10 @@
 <!-- Wrapper for the header content -->
 <div class="dialog-header">
   <h2 mat-dialog-title>Sản Phẩm Hoa Tươi</h2>
+  <button mat-icon-button class="close-box-btn" mat-dialog-close aria-label="Đóng">
+    <mat-icon class="close-icon">close</mat-icon>
+  </button>
 </div>
-
 <mat-dialog-content class="dialog-content-wrapper">
   @for (category of data.allCategories; track category) {
     <mat-checkbox 

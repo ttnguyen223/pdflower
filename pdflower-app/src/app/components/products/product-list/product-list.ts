@@ -137,6 +137,7 @@ export class ProductList {
       const dialogRef = this.dialog.open(FilterDialog, {
         width: '300px', // Standard Material dialog
         data: dialogData,
+        restoreFocus: false
       });
 
       dialogRef.afterClosed().subscribe((result: string[] | undefined) => {

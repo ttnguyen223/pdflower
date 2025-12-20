@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 // Interface defining the shape of data passed into and out of the dialog
 export interface FilterDialogData {
@@ -18,10 +19,11 @@ export interface FilterDialogData {
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,          // Needed for ngModel binding on checkboxes
-    MatDialogModule,      // Provides dialog structure components
-    MatButtonModule,      // Material buttons
-    MatCheckboxModule     // Material checkboxes
+    FormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatIconModule
   ],
 })
 export class FilterDialog {

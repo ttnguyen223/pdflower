@@ -1,14 +1,15 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, firstValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CloudinaryService {
   private http = inject(HttpClient);
-  private readonly CLOUD_NAME = 'dffpuxq6w'; 
-  private readonly UPLOAD_PRESET = 'unsigned_products'; 
+  private readonly CLOUD_NAME = environment.cloudinary.cloudName;
+  private readonly UPLOAD_PRESET = environment.cloudinary.uploadPreset;
   private readonly UPLOAD_URL = `https://api.cloudinary.com/v1_1/${this.CLOUD_NAME}/image/upload`;
 
   async uploadImage(file: File): Promise<string> {

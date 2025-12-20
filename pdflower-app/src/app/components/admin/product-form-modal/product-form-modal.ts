@@ -58,7 +58,6 @@ export class ProductFormModal {
       name: [data?.name || '', Validators.required],
       price: [this.formatVndPrice(data?.price) || '', Validators.required],
       description: [data?.description || ''], 
-      quantity: [data?.quantity || 0, [Validators.required, Validators.min(0)]],
       categories: this.fb.array(data?.categories || [], Validators.required),
       id: [data?.id || null],
       imageUrls: this.fb.array([]) // Array of {url: string, isMain: boolean} groups
@@ -85,38 +84,56 @@ export class ProductFormModal {
   onDrop(event: DragEvent): void {
     event.preventDefault();
     if (event.dataTransfer?.files) {
-      this.selectedFiles = Array.from(event.dataTransfer.files);
-      this.generateLocalPreviews();
+      const newFiles = Array.from(event.dataTransfer.files);
+      this.handleNewFiles(newFiles);
     }
   }
 
   onFileSelected(event: any): void {
     this.errorMessage = null;
-    this.selectedFiles = Array.from(event.target.files);
-    this.generateLocalPreviews();
+    const newFiles = Array.from(event.target.files) as File[];
+    this.handleNewFiles(newFiles);
+    
+    // Reset file input so the same file can be selected again if removed
+    if (this.fileInput) { 
+      this.fileInput.nativeElement.value = ''; 
+    }
+  }
+
+  private handleNewFiles(newFiles: File[]): void {
+    if (newFiles.length === 0) return;
+
+    // 1. Append to selectedFiles array
+    this.selectedFiles = [...this.selectedFiles, ...newFiles];
+
+    // 2. Generate and append previews
+    for (const file of newFiles) {
+      const objectUrl = URL.createObjectURL(file);
+      this.localImagePreviews.push(objectUrl);
+    }
   }
 
   clearSelectedFiles(): void {
+    // Revoke all URLs to prevent memory leaks
+    this.localImagePreviews.forEach(url => URL.revokeObjectURL(url));
     this.selectedFiles = [];
-    this.localImagePreviews.forEach(url => URL.revokeObjectURL(url));
     this.localImagePreviews = [];
-    if (this.fileInput) { this.fileInput.nativeElement.value = null; }
-  }
-
-  private generateLocalPreviews(): void {
-    this.localImagePreviews.forEach(url => URL.revokeObjectURL(url));
-    this.localImagePreviews = [];
-    for (const file of this.selectedFiles) {
-      this.localImagePreviews.push(URL.createObjectURL(file));
+    if (this.fileInput) { 
+      this.fileInput.nativeElement.value = ''; 
     }
   }
 
   removeSelectedFile(index: number): void {
+    // 1. Revoke the specific URL being removed
     URL.revokeObjectURL(this.localImagePreviews[index]);
+    
+    // 2. Remove from arrays at specific index
     this.selectedFiles.splice(index, 1);
     this.localImagePreviews.splice(index, 1);
+    
+    // 3. Reset input if list becomes empty
     if (this.selectedFiles.length === 0 && this.fileInput) {
-      this.fileInput.nativeElement.value = null;
+      this.fileInput.nativeElement.value = '';
     }
   }
 

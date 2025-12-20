@@ -1,5 +1,15 @@
-<h2 mat-dialog-title>{{ data ? 'Chỉnh Sửa Sản Phẩm ' : 'Sản Phẩm Mới' }}</h2>
+<!-- HEADER SECTION: Centered title with boxed Close Button -->
+<div class="dialog-header">
+  <h2 mat-dialog-title>
+    {{ data ? 'Chỉnh Sửa Sản Phẩm' : 'Sản Phẩm Mới' }}
+  </h2>
+  
+  <button mat-icon-button class="close-box-btn" (click)="onCancel()" aria-label="Đóng">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
+<!-- ERROR BANNER -->
 @if (errorMessage) {
 <div class="error-message-banner">
   <mat-icon color="warn">error</mat-icon>
@@ -7,138 +17,143 @@
 </div>
 }
 
-<mat-dialog-content>
+<mat-dialog-content class="product-dialog-content">
   <form [formGroup]="form" class="product-form-modal">
     
-    <!-- SECTION 1: Images (Pure File Upload Interface) -->
+    <!-- SECTION 1: Image Management -->
     <div class="form-section image-management-section">
         
-        <!-- Image Previews Rendered On Top (Uploaded Images) -->
-        @if (sortedImagePreviews.length > 0) {
-            <h4>Xem trước hình ảnh đã tải lên:</h4>
-            <div class="image-previews-container">
-                @for (image of sortedImagePreviews; track trackByIndex($index)) {
-                    <mat-card class="preview-thumbnail-card" [class.main-image-border]="image.isMain">
-                        <img [src]="image.url" alt="Product preview" class="preview-thumbnail-img" />
-                        @if (image.isMain) {
-                            <div class="main-image-badge">Chính</div>
-                            <button mat-icon-button color="warn" class="remove-local-file-button" (click)="removeImageUrlGroup($index); $event.stopPropagation()" aria-label="Remove uploaded image">
-                                <mat-icon>cancel</mat-icon>
-                            </button>
-                        }
-                    </mat-card>
-                }
-            </div>
-            <hr>
-        }
+        <!-- Existing Uploaded Previews -->
+        <div class="image-previews-container">
+          @for (image of sortedImagePreviews; track trackByIndex($index)) {
+              <div class="preview-item-wrapper">
+                  <mat-card class="preview-thumbnail-card" [class.main-image-border]="image.isMain">
+                      <img [src]="image.url" alt="Product preview" class="preview-thumbnail-img" />
+                      
+                      <!-- Remove button visible on all images -->
+                      <button mat-icon-button class="remove-local-file-button" 
+                              (click)="removeImageUrlGroup($index); $event.stopPropagation()">
+                          <mat-icon>close</mat-icon>
+                      </button>
+                  </mat-card>
+                  
+                  <!-- Label underneath, only for main image -->
+                  @if (image.isMain) {
+                      <span class="main-image-label">Chính</span>
+                  }
+              </div>
+          }
+      </div>
 
-        <!-- File Upload Interface (Drag & Drop Zone, Buttons, and Previews) -->
+        <!-- Upload Interface -->
         <div class="upload-area-container">
-            <!-- Drop Zone/Clickable area -->
             <div class="drop-zone" 
                  (dragover)="onDragOver($event)" 
                  (dragleave)="onDragLeave($event)" 
                  (drop)="onDrop($event)"
                  (click)="fileInput.click()">
                  
-                 <mat-icon>cloud_upload</mat-icon>
+                 <mat-icon class="upload-icon">cloud_upload</mat-icon>
                  <p>Kéo và thả hình ảnh vào đây hoặc nhấp để chọn tệp</p>
                  <input type="file" multiple (change)="onFileSelected($event)" accept="image/*" #fileInput style="display: none;" />
             </div>
 
-            <!-- Clear Controls (Only visible if files are selected locally) -->
+            <!-- Locally Selected Files -->
             @if (selectedFiles.length > 0) {
               <div class="upload-controls-bar">
                   <span class="file-count-label">Đã chọn: {{ selectedFiles.length }} tệp</span>
                   
-                  <button mat-raised-button color="warn" (click)="clearSelectedFiles()" [disabled]="isUploading">
-                      <mat-icon>clear_all</mat-icon> Xóa danh sách tải lên
+                  <button mat-icon-button class="trash-clear-btn" (click)="clearSelectedFiles()" 
+                          [disabled]="isUploading" matTooltip="Xóa danh sách">
+                      <mat-icon>delete_outline</mat-icon>
                   </button>
-                  
-                  <!-- REMOVED THE SEPARATE UPLOAD BUTTON -->
               </div>
 
-              <!-- Local Previews for files about to be uploaded -->
               <div class="local-previews-list">
                 @for (previewUrl of localImagePreviews; track $index; let i = $index) {
-                    <div class="local-preview-item">
-                        <img [src]="previewUrl" alt="Local preview" class="preview-thumbnail-img" />
-                        <button mat-icon-button color="warn" class="remove-local-file-button" (click)="removeSelectedFile(i); $event.stopPropagation()" aria-label="Remove selected file">
-                            <mat-icon>cancel</mat-icon>
-                        </button>
-                    </div>
+                  <div class="local-preview-item">
+                      <img [src]="previewUrl" alt="Local preview" class="preview-thumbnail-img" />
+                      <button mat-icon-button class="remove-local-file-button" 
+                              (click)="removeSelectedFile(i); $event.stopPropagation()">
+                          <mat-icon>close</mat-icon>
+                      </button>
+                  </div>
                 }
               </div>
             }
         </div>
     </div>
-    <!-- SECTION 2: Product Details (Input fields use Vietnamese labels) -->
-    <div class="form-section">
-      <mat-form-field appearance="outline">
+
+    <!-- SECTION 2: Product Details -->
+    <div class="form-section details-section">      
+      <!-- Cập nhật subscriptSizing="dynamic" để tránh chồng lấn lỗi -->
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
         <mat-label>Tên sản phẩm</mat-label>
         <input matInput formControlName="name" required />
         @if (form.controls['name'].invalid && form.controls['name'].touched) {
-        <mat-error>Vui lòng bao gồm tên sản phẩm</mat-error>
+          <mat-error>Vui lòng nhập tên sản phẩm</mat-error>
         }
       </mat-form-field>
+
       <div class="price-quantity-group">
-        <mat-form-field appearance="outline" class="price-input-field">
-          <mat-label>Giá (VND)</mat-label>
+        <!-- Cập nhật subscriptSizing="dynamic" ở đây để đồng nhất khoảng cách -->
+        <mat-form-field appearance="outline" class="price-input-field full-width" subscriptSizing="dynamic">
+          <mat-label>Giá bán (₫)</mat-label>
           <input
             matInput
             type="text"
             formControlName="price"
+            placeholder="0"
             required
             (input)="onPriceInput($event)"
           />
           @if (form.controls['price'].invalid && form.controls['price'].touched) {
-          <mat-error>Vui lòng nhập giá sản phẩm.</mat-error>
-          }
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Số lượng</mat-label>
-          <input matInput type="number" formControlName="quantity" required min="0" />
-          @if (form.controls['quantity'].invalid && form.controls['quantity'].touched) {
-          <mat-error>Số lượng phải lớn hơn hoặc bằng 0.</mat-error>
+            <mat-error>Vui lòng nhập giá tiền hợp lệ</mat-error>
           }
         </mat-form-field>
       </div>
-      <mat-form-field appearance="outline">
+
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
         <mat-label>Mô tả (Tùy chọn)</mat-label>
-        <textarea matInput formControlName="description" rows="4" class="product-description-input"></textarea>
+        <textarea matInput formControlName="description" rows="4" placeholder="Nhập chi tiết về loại hoa, ý nghĩa..."></textarea>
       </mat-form-field>
     </div>
+
     <!-- SECTION 3: Categories -->
-    <div class="form-section">
-      <div class="categories-section">
-        <h4>Thể loại:</h4>
+    <div class="form-section categories-section">
+      <h4 class="section-title">Thể loại:</h4>
+      <div class="category-grid">
         @for (category of categories$ | async; track category.id) {
-        <div class="category-item-vertical">
-          <mat-checkbox
-            [value]="category.name"
-            (change)="onCategoryChange($event)"
-            [checked]="categoriesFormArray.value.includes(category.name)"
-          >
-            {{ category.name }}
-          </mat-checkbox>
-        </div>
-        } @if (categoriesFormArray.invalid && categoriesFormArray.touched) {
-        <mat-error style="display: block; margin-top: 10px"
-          >Vui lòng chọn ít nhất một loại.</mat-error
-        >
-        }
+          <div class="category-item">
+            <mat-checkbox
+              color="primary"
+              [value]="category.name"
+              (change)="onCategoryChange($event)"
+              [checked]="categoriesFormArray.value.includes(category.name)"
+            >
+              {{ category.name }}
+            </mat-checkbox>
+          </div>
+        } 
       </div>
+      @if (categoriesFormArray.invalid && categoriesFormArray.touched) {
+        <mat-error class="category-error">Vui lòng chọn ít nhất một danh mục.</mat-error>
+      }
     </div>
   </form>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">Hủy bỏ</button>
+<!-- ACTIONS FOOTER -->
+<div class="dialog-actions-footer">
+  <button mat-button class="cancel-btn"
+    (click)="onCancel()"
+    [disabled]="isUploading">Hủy bỏ
+  </button>
   <button 
     mat-raised-button 
-    color="primary" 
+    class="save-btn"
     [disabled]="!form.valid || isUploading" 
     (click)="onSave()">
-    Lưu sản phẩm
+    {{ isUploading ? 'Đang lưu...' : 'Lưu sản phẩm' }}
   </button>
-</mat-dialog-actions>
+</div>

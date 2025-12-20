@@ -38,7 +38,7 @@ export class ProductTable implements OnInit {
   private dialog = inject(MatDialog);
 
   // Define columns for the table
-  displayedColumns: string[] = ['imagePreview', 'name', 'price', 'quantity', 'status', 'actions'];
+  displayedColumns: string[] = ['imagePreview', 'name', 'price', 'status', 'actions'];
   products$!: Observable<Product[]>;
 
   ngOnInit(): void {

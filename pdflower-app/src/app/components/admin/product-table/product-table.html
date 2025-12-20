@@ -29,12 +29,6 @@
       <th mat-header-cell *matHeaderCellDef> Giá </th>
       <td mat-cell *matCellDef="let element"> {{ element.price | currency:'VND':'symbol':'1.0-0' }} </td>
     </ng-container>
-
-    <!-- Quantity Column -->
-    <ng-container matColumnDef="quantity">
-      <th mat-header-cell *matHeaderCellDef> Số lượng </th>
-      <td mat-cell *matCellDef="let element"> {{ element.quantity }} </td>
-    </ng-container>
     
     <!-- Status (Visibility) Column -->
     <ng-container matColumnDef="status">
