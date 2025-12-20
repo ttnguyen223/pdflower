@@ -1,8 +1,8 @@
 /* --- 1. LAYOUT HEADER --- */
 .product-list-wrapper {
     padding: 20px 15px;
-    position: relative; /* Cần thiết để spinner căn giữa theo wrapper này */
-    min-height: 400px;  /* Tránh bị nhảy giao diện khi đang load */
+    position: relative; 
+    min-height: 400px;  
 }
 
 .filter-sort-header {
@@ -19,7 +19,7 @@
     align-items: center; 
 }
 
-/* --- 2. STYLE ĐỒNG NHẤT VỚI ADMIN-ADD-BTN (CHO FILTER & SORT) --- */
+/* --- 2. FILTER & SORT STYLE (UNIFORM WITH ADMIN) --- */
 .as-form-field-control,
 ::ng-deep .sort-form-field .mat-mdc-text-field-wrapper {
     height: 50px !important;
@@ -36,7 +36,7 @@
     padding: 0 16px; 
     border: 1px solid #333 !important; 
     color: #333 !important; 
-    font-weight: 700 !important; 
+    font-weight: 400 !important; 
     text-transform: uppercase;
     letter-spacing: 0.5px;
     line-height: normal;
@@ -44,6 +44,7 @@
     transition: background-color 0.2s;
 }
 
+/* Dropdown Arrow Color */
 mat-select {
   --mat-select-enabled-arrow-color: rgb(141, 131, 18);
   --mat-select-focused-arrow-color: rgb(141, 131, 18);
@@ -51,11 +52,18 @@ mat-select {
 }
 
 .as-outlined-input:hover {
-    background-color: rgb(141, 131, 18) !important; 
+    background-color: palegoldenrod !important; 
     cursor: pointer;
 }
 
-/* --- 3. CĂN CHỈNH CHI TIẾT Ô SORT (ANGULAR MATERIAL) --- */
+/* --- UPDATED: Sort Item Hover (Matches Filter Button Hover) --- */
+::ng-deep .mat-mdc-option:hover:not(.mat-mdc-option-disabled),
+::ng-deep .mat-mdc-option.mat-mdc-option-active:not(.mat-mdc-option-disabled),
+::ng-deep .mat-mdc-option.mdc-list-item--activated:not(.mat-mdc-option-disabled) {
+    background-color: palegoldenrod !important;
+}
+
+/* --- 3. SORT CONTROL ALIGNMENT --- */
 .sort-control .mat-mdc-form-field {
     width: 170px;
     display: flex;
@@ -93,7 +101,7 @@ mat-select {
     color: #333 !important;
 }
 
-/* --- 4. RESPONSIVE CHO MOBILE (768px) --- */
+/* --- 4. RESPONSIVE MOBILE (768px) --- */
 @media (max-width: 768px) {
     .as-form-field-control,
     ::ng-deep .sort-form-field .mat-mdc-text-field-wrapper {
@@ -111,15 +119,9 @@ mat-select {
         padding: 5px 0;
         gap: 5px;
     }
-    .page-num-btn {
-        width: 32px !important;
-        height: 32px !important;
-        min-width: 32px !important;
-        font-size: 12px;
-    }
 }
 
-/* --- 5. GRID SẢN PHẨM & CARDS --- */
+/* --- 5. PRODUCT GRID & CARDS --- */
 .product-image-container {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -154,7 +156,7 @@ mat-select {
     color: #333;
 }
 
-/* --- 6. PHÂN TRANG --- */
+/* --- 6. PAGINATION --- */
 .pagination-container {
     display: flex;
     flex-direction: column;
@@ -200,15 +202,17 @@ mat-select {
     border-color: rgb(141, 131, 18) !important;
 }
 
+/* --- 7. SPINNER CENTERING (NEAR TOP) --- */
 .loading-state-container {
     display: flex;
-    justify-content: center; /* Horizontal centering */
-    align-items: center;     /* Vertical centering */
-    min-height: 400px;       /* Keeps the layout from collapsing while loading */
+    justify-content: center; 
+    align-items: flex-start;  
+    padding-top: 100px;      
+    min-height: 400px;       
     width: 100%;
 }
 
-/* Ẩn mặc định paginator */
+/* Hide default paginator labels */
 ::ng-deep .mat-mdc-paginator-page-size,
 ::ng-deep .mat-mdc-paginator-range-label {
     display: none !important;
