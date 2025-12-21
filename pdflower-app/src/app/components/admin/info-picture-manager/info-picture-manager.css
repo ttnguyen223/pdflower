@@ -128,7 +128,7 @@
   background-color: #eee48b !important; /* Hover effect */
 }
 
-.save-btndmin-add-btn[disabled] {
+.save-btn[disabled] {
   background-color: #e0e0e0 !important;
   color: #999 !important;
   border-color: #ccc !important;
