@@ -144,17 +144,22 @@
     padding-bottom: 120px; /* More padding on mobile for the larger interaction area */
   }
 
+    /* Fixed Centered Button Logic */
   .floating-actions {
-    bottom: 16px;
-    right: 16px;
-    left: 16px; /* Stretch container across bottom for better centering if needed */
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    transform: none; /* Disables the translateX math to prevent cut-off */
+    padding: 0 16px;
+    box-sizing: border-box;
   }
 
   .save-btn {
-    width: 100%; /* Optional: Full width button on mobile for easier tapping */
+    width: 100%; 
     max-width: 400px;
     height: 50px;
-    border-radius: 12px; /* Slightly less rounded on mobile */
+    border-radius: 4px !important; /* Slight rounding for better mobile touch feel */
   }
 
   .image-previews-container {
