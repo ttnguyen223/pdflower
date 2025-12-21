@@ -55,7 +55,7 @@ export class ProductFormModal {
 
     // Build the form with validators
     this.form = this.fb.group({
-      name: [data?.name || '', Validators.required],
+      name: [data?.name || '', [Validators.required, Validators.maxLength(45)]],
       price: [this.formatVndPrice(data?.price) || '', Validators.required],
       description: [data?.description || ''], 
       categories: this.fb.array(data?.categories || [], Validators.required),

@@ -145,7 +145,7 @@ mat-select {
 }
 
 .product-title {
-    font-size: 0.95rem;
+    font-size: 0.64rem;
     font-weight: 600;
     line-clamp: 2;
     display: -webkit-box;
@@ -154,6 +154,10 @@ mat-select {
     overflow: hidden;
     height: 2.8em;
     color: #333;
+}
+
+.product-price {
+    font-size: 0.64rem;
 }
 
 /* --- 6. PAGINATION --- */

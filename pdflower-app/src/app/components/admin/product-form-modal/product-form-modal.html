@@ -86,12 +86,26 @@
 
     <!-- SECTION 2: Product Details -->
     <div class="form-section details-section">      
-      <!-- Cập nhật subscriptSizing="dynamic" để tránh chồng lấn lỗi -->
       <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
         <mat-label>Tên sản phẩm</mat-label>
-        <input matInput formControlName="name" required />
+        <input matInput 
+              #nameInput 
+              formControlName="name" 
+              maxlength="45" 
+              required />
+        
+        <!-- Character Counter Hint -->
+        <mat-hint align="end">{{ nameInput.value.length }}/45</mat-hint>
+
         @if (form.controls['name'].invalid && form.controls['name'].touched) {
-          <mat-error>Vui lòng nhập tên sản phẩm</mat-error>
+          <mat-error>
+            @if (form.controls['name'].errors?.['required']) {
+              Vui lòng nhập tên sản phẩm
+            }
+            @if (form.controls['name'].errors?.['maxlength']) {
+              Tên sản phẩm không được quá 45 ký tự
+            }
+          </mat-error>
         }
       </mat-form-field>
 
