@@ -1,0 +1,53 @@
+<mat-toolbar color="primary" class="admin-toolbar">
+  <span>Quản Lý Hình Ảnh Thông Tin</span>
+</mat-toolbar>
+
+<div class="manager-container">
+  <div class="product-dialog-content">
+    <div class="product-form-modal">
+      <div class="form-section image-management-section">
+        <!-- Smaller instruction text -->
+        <span class="instruction-text">Vui lòng kéo thả ảnh để sắp xếp thứ tự để hình ảnh hiển thị sau khi ảnh sản phẩm.</span>
+        
+        <div cdkDropList 
+             cdkDropListOrientation="mixed" 
+             class="image-previews-container" 
+             (cdkDropListDropped)="onDrop($event)">
+          
+          @for (image of allImages(); track $index) {
+            <div class="preview-item-wrapper" cdkDrag>
+              <div class="drag-placeholder" *cdkDragPlaceholder></div>
+              <mat-card class="preview-thumbnail-card" [class.is-new-local]="image.isNewLocal">
+                <img [src]="image.imageUrl || image.preview" alt="Info Card" class="preview-thumbnail-img" />
+                <button mat-icon-button class="remove-local-file-button" (click)="removeImage($index); $event.stopPropagation()">
+                  <mat-icon>close</mat-icon>
+                </button>
+                @if (image.isNewLocal) {
+                  <span class="new-image-label">Mới</span>
+                }
+              </mat-card>
+            </div>
+          }
+
+          <div class="preview-item-wrapper no-drag">
+            <div class="upload-card-trigger" (click)="fileInput.click()">
+              <mat-icon>add_a_photo</mat-icon>
+              <span>Thêm ảnh</span>
+              <input type="file" multiple #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Save Button at Bottom Right -->
+<div class="floating-actions">
+  <button mat-raised-button color="accent" class="save-btn shadow-elevation" 
+          [disabled]="isUploading() || !hasChanges()" 
+          (click)="onSaveAll()">
+    <mat-icon>{{ isUploading() ? 'sync' : 'save' }}</mat-icon>
+    <span>{{ isUploading() ? 'Đang lưu...' : 'Lưu tất cả' }}</span>
+  </button>
+</div>

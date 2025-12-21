@@ -3,10 +3,11 @@
   import { provideHttpClient } from '@angular/common/http';
 
   import { routes } from './app.routes';
-  import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+  import { initializeApp, provideFirebaseApp, getApp } from '@angular/fire/app';
   import { getFirestore, provideFirestore } from '@angular/fire/firestore';
   import { provideAuth, getAuth } from '@angular/fire/auth';
   import { provideStorage, getStorage } from '@angular/fire/storage';
+  //import { provideAppCheck, initializeAppCheck, ReCaptchaEnterpriseProvider } from '@angular/fire/app-check';
   import { environment } from '../environments/environment';
 
   export const appConfig: ApplicationConfig = {
@@ -18,6 +19,10 @@
         anchorScrolling: 'enabled'
       })), 
       provideFirebaseApp(() => initializeApp(environment.firebase)),
+      // provideAppCheck(() => initializeAppCheck(getApp(), {
+      //   provider: new ReCaptchaEnterpriseProvider(environment.recaptchaKey),
+      //   isTokenAutoRefreshEnabled: true
+      // })),
       provideFirestore(() => getFirestore()),
       provideAuth(() => getAuth()),
       provideStorage(() => getStorage()),

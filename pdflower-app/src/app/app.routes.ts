@@ -7,6 +7,7 @@ import { Register } from './components/auth/register/register';
 import { ProductTable } from './components/admin/product-table/product-table';
 import { AdminGuard } from '../app/guards/admin-guard';
 import { ProductDetailsPage } from './components/products/product-details-page/product-details-page'; 
+import { InfoPictureManager } from './components/admin/info-picture-manager/info-picture-manager';
 
 export const routes: Routes = [
     {
@@ -18,6 +19,7 @@ export const routes: Routes = [
     { path: 'register', component: Register},
     { path: 'cart', component: CartPage },
     { path: 'admin', component: ProductTable, canActivate: [AdminGuard] },
+    { path: 'admin/info-cards', component: InfoPictureManager, canActivate: [AdminGuard] },
     { path: 'products', component: ProductList },
     { path: 'products/:id', component: ProductDetailsPage }
 ];
