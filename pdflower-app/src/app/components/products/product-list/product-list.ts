@@ -129,8 +129,8 @@ export class ProductList {
             case 'name_desc':
                 return b.name.localeCompare(a.name);
             case 'recent':
-                const dateA = DateTimeUtils.getTimestampValue(a.updateDate || a.insertDate);
-                const dateB = DateTimeUtils.getTimestampValue(b.updateDate || b.insertDate);
+                const dateA = DateTimeUtils.getTimestampValue(a.insertDate);
+                const dateB = DateTimeUtils.getTimestampValue(b.insertDate);
                 return dateB - dateA || a.name.localeCompare(b.name);
             default:
                 return 0;

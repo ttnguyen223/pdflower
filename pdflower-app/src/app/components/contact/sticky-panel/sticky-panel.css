@@ -1,0 +1,47 @@
+.sticky-side-panel {
+  position: fixed;
+  right: 20px;   /* Distance from right edge */
+  bottom: 20px;  /* Fixed to the bottom instead of center */
+  z-index: 2000; /* Ensure it stays above everything */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;     /* Space between the icons */
+}
+
+.sticky-icon {
+  width: 30px;   /* Smaller size as requested */
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: white;
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+}
+
+.sticky-icon mat-icon {
+  font-size: 15px; /* Scales the icon inside to fit smaller circle */
+  width: 15px;
+  height: 15px;
+}
+
+.sticky-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Brand Colors */
+.facebook { background-color: #1877F2; }
+.phone { background-color: palegreen; } /* Often green for phone/WhatsApp */
+.email { background-color: goldenrod; }
+
+.custom-icon-img {
+  width: 20px;  /* Matches the visual scale of mat-icons */
+  height: 20px;
+  object-fit: contain;
+}
+
+.tiktok {
+  background-color: #000000;
+}

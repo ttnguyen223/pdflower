@@ -8,6 +8,7 @@ import { ProductTable } from './components/admin/product-table/product-table';
 import { AdminGuard } from '../app/guards/admin-guard';
 import { ProductDetailsPage } from './components/products/product-details-page/product-details-page'; 
 import { InfoPictureManager } from './components/admin/info-picture-manager/info-picture-manager';
+import { EmailFormComponent } from './components/contact/email-form/email-form';
 
 export const routes: Routes = [
     {
@@ -21,7 +22,8 @@ export const routes: Routes = [
     { path: 'admin', component: ProductTable, canActivate: [AdminGuard] },
     { path: 'admin/info-cards', component: InfoPictureManager, canActivate: [AdminGuard] },
     { path: 'products', component: ProductList },
-    { path: 'products/:id', component: ProductDetailsPage }
+    { path: 'products/:id', component: ProductDetailsPage },
+    { path: 'contact-us', component: EmailFormComponent }
 ];
 
 @NgModule({

@@ -14,6 +14,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { firstValueFrom } from 'rxjs';
 import { MessageDialog, MessageDialogData } from '../app/components/dialogs/message-dialog/message-dialog'; 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { StickyPanelComponent } from './components/contact/sticky-panel/sticky-panel';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +28,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatBadgeModule,
     CommonModule,
     MatMenuModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    StickyPanelComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',

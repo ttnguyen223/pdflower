@@ -1,0 +1,27 @@
+<div class="email-form-container">
+  <h2>Contact Us</h2>
+  <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Your Email</mat-label>
+      <input matInput formControlName="senderEmail" placeholder="email@example.com">
+      <mat-error *ngIf="contactForm.get('senderEmail')?.hasError('email')">
+        Please enter a valid email address
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Subject</mat-label>
+      <input matInput formControlName="subject" placeholder="What is this about?">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Message</mat-label>
+      <textarea matInput formControlName="message" rows="5" placeholder="Write your message here..."></textarea>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="contactForm.invalid">
+      Open Mail Client
+    </button>
+  </form>
+</div>

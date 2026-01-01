@@ -74,8 +74,8 @@ export class ProductTable implements OnInit, AfterViewInit {
       
       if (sort.active === 'imagePreview') {
         return data.sort((a, b) => {
-          const dateA = DateTimeUtils.getTimestampValue(a.updateDate || a.insertDate);
-          const dateB = DateTimeUtils.getTimestampValue(b.updateDate || b.insertDate);
+          const dateA = DateTimeUtils.getTimestampValue(a.insertDate);
+          const dateB = DateTimeUtils.getTimestampValue(b.insertDate);
           return isAsc ? (dateB - dateA) : (dateA - dateB);
         });
       }
@@ -100,8 +100,8 @@ export class ProductTable implements OnInit, AfterViewInit {
    */
   private sortProducts(products: Product[]): Product[] {
     return products.slice().sort((a, b) => {
-      const dateA = DateTimeUtils.getTimestampValue(a.updateDate || a.insertDate);
-      const dateB = DateTimeUtils.getTimestampValue(b.updateDate || b.insertDate);
+      const dateA = DateTimeUtils.getTimestampValue(a.insertDate);
+      const dateB = DateTimeUtils.getTimestampValue(b.insertDate);
       return dateB - dateA || a.name.localeCompare(b.name);
     });
   }
